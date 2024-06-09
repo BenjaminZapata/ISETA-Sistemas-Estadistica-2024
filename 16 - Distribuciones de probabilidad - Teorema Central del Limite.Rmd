@@ -19,7 +19,7 @@ Vamos a construir una población de referencia. Para comenzar gueneramos número
 
 ```{r}
 nPop <- 50000
-pop1 <- runif(nPop, min = 0, max = 100)
+ pop1 <- runif(nPop, min = 0, max = 100)
 # pop1 <- rnorm(nPop, mean = 50, sd = 25)
 # pop1 <- rbinom(nPop, 99, 0.25)
 # pop1 <- rpois(nPop, lambda = 20)
@@ -27,6 +27,16 @@ pop1 <- runif(nPop, min = 0, max = 100)
 # pop1 <- rchisq(nPop, 50, ncp = 0.1)
 # pop1 <- rgamma(nPop, shape = 2, scale = 5) # Asimétrica
 ```
+
+```{r}
+pop1
+```
+
+```{r}
+mean(pop1)
+```
+
+
 
 El histograma permite ver la población generada.
 
@@ -54,6 +64,8 @@ muestras <-  muestras %>% bind_cols(
   )
 muestras
 ```
+
+
 ```{r}
 gr1 <- ggplot(muestras, aes(x = media)) + 
   stat_function(fun = dnorm, n = 101, args = list(mean = mean(muestras$media), sd = sd(muestras$media))) +

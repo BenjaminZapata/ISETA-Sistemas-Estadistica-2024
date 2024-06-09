@@ -41,10 +41,12 @@ diamondsTidy
 
 Se puede calcular los índices que se desee a cada grupo de interés. Creamos un nuevo data set con los índices que nos interese comparar.
 
+En este caso la moda no tiene sentido, por eso la excluyo de las estadísticas.
+
 ```{r}
 indicesDiamonds <- diamondsTidy %>% 
   group_by(cut,color,clarity,Variable) %>% 
-  reframe(n = n(), media = mean(valor), moda = moda(valor), q1 = q1(valor), mediana = median(valor),q3 = q3(valor), sd = sd(valor), varianza = var(valor), cv = sd/media, EE = std.error(valor), asimetria = skewness(valor), curtosis = kurtosis(valor), "IC95-" = ic95(valor)[1], "IC95+" = ic95(valor)[2])
+  reframe(n = n(), media = mean(valor), q1 = q1(valor), mediana = median(valor),q3 = q3(valor), sd = sd(valor), varianza = var(valor), cv = sd/media, EE = std.error(valor), asimetria = skewness(valor), curtosis = kurtosis(valor), "IC95-" = ic95(valor)[1], "IC95+" = ic95(valor)[2])
 indicesDiamonds
 ```
 
@@ -125,25 +127,32 @@ gr3
 
 ```{r}
 help(iris)
-iris
+miIris <- iris
 ```
 
 ```{r}
-summary(iris)
+miIris$Flower <- 1:150
+```
+
+
+```{r}
+summary(miIris)
 ```
 
 ## Transformar a tidy
 
 ```{r}
 nombres <- c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width")
-irisTidy <- tibble(iris) %>% pivot_longer(all_of(nombres), names_to = "Variable", values_to = "valor")
+irisTidy <- tibble(miIris) %>% pivot_longer(nombres, names_to = "Variable", values_to = "valor")
 irisTidy
 ```
 
 ## Calcular índices por grupo
 
+En este caso la moda no tiene sentido, por eso la excluyo de las estadísticas.
+
 ```{r}
-indicesIris <- irisTidy %>% group_by(Species,Variable) %>% reframe(n = n(), media = mean(valor), moda = moda(valor), q1 = q1(valor), mediana = median(valor),q3 = q3(valor), sd = sd(valor), varianza = var(valor), cv = sd/media, EE = std.error(valor), "IC95-" = ic95(valor)[1], "IC95+" = ic95(valor)[2])
+indicesIris <- irisTidy %>% group_by(Species,Variable) %>% reframe(n = n(), media = mean(valor), q1 = q1(valor), mediana = median(valor),q3 = q3(valor), sd = sd(valor), varianza = var(valor), cv = sd/media, EE = std.error(valor), "IC95-" = ic95(valor)[1], "IC95+" = ic95(valor)[2])
 indicesIris
 ```
 

@@ -87,7 +87,7 @@ p1Azul * p2NoAzul
 bolitas <- rep(c("azul", "amarillo", "gris"), times = c(5, 3, 4))
 pares <- list()
 
-resultados <- replicate(10000, {
+resultados <- replicate(1000000, {
   pares <- append(pares,sample(bolitas, 2, replace = FALSE))
   pares
   })
@@ -177,19 +177,29 @@ serie <- tibble(n = integer(), prob = double())
 for (i in repsExp) {
   serie <- add_row(serie, n = i, prob = probEventoMontecarlo(c(1,2,3,4,5,6),1,i))
 }
-ggplot(serie, aes(x = n, y = prob)) + 
-  geom_point(alpha = 0.3)
 ```
 
 ```{r}
-repsExp <- seq(100,20000,100)
-serie <- tibble(n = integer(), prob = double())
-for (i in repsExp) {
-  serie <- add_row(serie, n = i, prob = probEventoMontecarlo(c(1,2,3,4,5,6),1,i))
-}
 ggplot(serie, aes(x = n, y = prob)) + 
-  geom_point(alpha = 0.3)
+  geom_point(alpha = 0.3) +
+  ylim(c(0,0.5))
 ```
+
+
+```{r}
+repsExp2 <- seq(100,20000,100)
+serie2 <- tibble(n = integer(), prob = double())
+for (i in repsExp2) {
+  serie2 <- add_row(serie2, n = i, prob = probEventoMontecarlo(c(1,2,3,4,5,6),1,i))
+}
+```
+
+```{r}
+ggplot(serie2, aes(x = n, y = prob)) + 
+  geom_point(alpha = 0.3) + 
+  ylim(c(0,0.5))
+```
+
 
 ## Moneda
 
@@ -214,11 +224,16 @@ do.call("grid.arrange", c(graficos, nrow = 5))
 ```
 
 ```{r}
-repsExp <- seq(100,20000,100)
-serie <- tibble(n = integer(), prob = double())
-for (i in repsExp) {
-  serie <- add_row(serie, n = i, prob = probEventoMontecarlo(c(1,2),1,i))
+repsExp3 <- seq(100,20000,100)
+serie3 <- tibble(n = integer(), prob = double())
+for (i in repsExp3) {
+  serie3 <- add_row(serie3, n = i, prob = probEventoMontecarlo(c(1,2),1,i))
 }
-ggplot(serie, aes(x = n, y = prob)) + 
-  geom_point(alpha = 0.3)
 ```
+
+```{r}
+ggplot(serie3, aes(x = n, y = prob)) + 
+  geom_point(alpha = 0.3) + 
+  ylim(c(0.25,0.75))
+```
+
