@@ -58,7 +58,7 @@ Veremos seguidamente las geometrías básicas que deben conocerse en estadístic
 -   Gráfico de dispersión (coordenadas cartesianas)
 -   Gráfico de líneas
 -   Coordenadas polares
--   Matriz Gráfica de correlación
+-   Matriz Gráfic   a de correlación
 
 ### Histograma y Polígono de frecuencias
 

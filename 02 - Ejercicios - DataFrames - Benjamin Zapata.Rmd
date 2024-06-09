@@ -5,7 +5,7 @@ output:
     toc: true
 ---
 
-# Estudiante: SuNombre
+# Estudiante: Benjamin Zapata
 
 Para realizar estos ejercicios use como referencia el documento "02 - DataFrames.Rmd".
 
@@ -154,7 +154,7 @@ print(datosSeleccionados)
 library(dplyr)
 
 promedioConsumoCombustible <- datos_tidy %>%
-  filter(CYLINDERS >= 4) %>%
+  filter(CYLINDERS == 4) %>%
   pull(FUEL.CONSUMPTION) %>%
   mean()
 

@@ -1,0 +1,174 @@
+---
+title: "04 - Ejercicios - Graficando"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+# Estudiante: Benjamin Zapata
+
+Para realizar estos ejercicios use como referencia el documento "04 - Graficando.Rmd".
+
+Resuelva estos ejercicios en este documento insertando los chuncks necesarios (cntrl + alt + i), luego de cada consigna. Agregue al nombre del archivo el suyo al final (04 - Ejercicios - Graficando - SuNombre Apellido.Rmd), y me lo envía por email.
+
+Cargue las librerías necesaria cuando las necesite, no lo haga al inicio de la actividad. Esto no es el modo habitual de trabajo, pero se pretende aquí que usted descubra cuándo necesita las librerías extra.
+
+# Cargar datos de Girasol
+
+-   Cargue los datos de Girasol que construyó en la práctica de Data Frames. Recuerde que siempre debe preparar los datos antes de graficarlos.
+
+```{r}
+library(RSQLite)
+
+connection <- dbConnect(RSQLite::SQLite(), "./datos/SQLite.db")
+datosGirasol <- dbGetQuery(connection, "SELECT * FROM tibbleGirasol")
+datosGirasol
+```
+
+
+# Graficar con ggplot2
+
+## Histograma
+
+-   Haga un histograma con los datos de girasol diferenciando los tratamientos.
+
+```{r}
+library(ggplot2)
+
+datosGirasol5 <- datosGirasol %>%
+  filter(str_detect(Parcela, "5pl/m2"))
+
+graficoGirasol5 <- ggplot(datosGirasol5) +
+  ggtitle("5pl/m2") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_histogram(fill = "cyan")
+
+datosGirasol10 <- datosGirasol %>%
+  filter(str_detect(Parcela, "10pl/m2"))
+
+graficoGirasol10 <- ggplot(datosGirasol10) +
+  ggtitle("10pl/m2") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_histogram(fill = "blue")
+
+graficoGirasol5 + graficoGirasol10
+```
+
+-   Haga un histograma con los datos de girasol separando los gráficos por tratamientos con "facet".
+
+```{r}
+graficoGirasolHis <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Histograma") +
+  aes(x = Altura, fill = Parcela, alpha = 0.5) +
+  geom_histogram()
+
+graficoGirasolHis
+```
+
+##  Polígono de Frecuencias
+
+-   ídem anterior pero cambiando la geometría a Polígono de Frecuencias
+
+```{r}
+graficoGirasolPol <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Pol. Frecuencia") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_freqpoly(color = "red") + 
+  facet_wrap(vars(Parcela), dir = "v")
+
+graficoGirasolPol
+```
+
+## Gráfico de Densidad
+
+-   ídem anterior pero cambiando la geometría a Densidad
+
+```{r}
+graficoGirasolDen <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Densidad") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_density(color = "blue", fill = "lightblue") + 
+  facet_wrap(vars(Parcela), dir = "v")
+
+graficoGirasolDen
+```
+
+## Densidad Acumulada
+
+-   ídem anterior pero cambiando la geometría a Densidad Acumulada
+
+```{r}
+graficoGirasolFreq <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Pol. Frecuencia") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_freqpoly(aes(y=cumsum(..count..)), color = "red")
+
+graficoGirasolDens <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Densidad") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_density(aes(y=cumsum(..count..)), color = "red", fill = "pink")
+
+graficoGirasolFreq + graficoGirasolDens
+```
+
+## BoxPlot
+
+-   ídem anterior pero cambiando la geometría a BoxPlot
+
+```{r}
+graficoGirasolBox <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Boxplot") +
+  aes(y = Altura, x = Parcela, alpha = 0.5) +
+  geom_boxplot(color = "blue", fill = "lightblue")
+
+graficoGirasolBox
+```
+
+## Violin
+
+-   ídem anterior pero cambiando la geometría a Violín
+
+```{r}
+graficoGirasolViolin <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Boxplot") +
+  aes(y = Altura, x = Parcela, alpha = 0.5) +
+  geom_violin(color = "blue", fill = "lightblue")
+
+graficoGirasolViolin
+```
+
+## Gráficos superpuestos
+
+-   Superponga en un mismo gráfico un histograma y un Polígono de Frecuencias.
+
+```{r}
+graficoGirasolHis + graficoGirasolFreq
+```
+
+-   Superponga en un mismo gráfico un BoxPlot y un Violín.
+
+```{r}
+graficoGirasolBox + graficoGirasolViolin
+```
+
+# Cargar datos de Fuel Consumption
+
+Los siguientes datos de girasol no sirven para los gráfico siguientes porque sólo contienen una variable, y seguidamente necesitaremos al menos 2.
+-   Cargue los datos de Fuel Consumption que usó en la práctica de Data Frames.
+
+```{r}
+datosFuel <- dbGetQuery(connection, "SELECT * FROM TablaComun")
+datosFuel
+```
+
+## Gráfico de dispersión
+
+-   Haga un gráfico de dispersión que relacione las emisiones de CO2 y el consumo de combustible.
+
+```{r}
+graficoFuelDispersion <- ggplot(datosFuel) +
+  aes(x = COEMISSIONS, y = FUEL.CONSUMPTION, alpha = 0.5, color = MAKE) +
+  geom_point()
+  
+graficoFuelDispersion
+```
