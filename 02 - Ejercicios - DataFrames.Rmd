@@ -15,21 +15,67 @@ Cargue las librerías necesaria cuando las necesite, no lo haga al inicio de la 
 
 # Tidyverse y estructuras Tidy.
 
+```{r}
+library(tidyverse)
+```
+
 ## Fuel Consumption
 
 -   Cargue los datos del archivo "FuelConsumption.xlsx" que está en la carpeta "datos". Los dato fueron obtenidos del siguiente sitio: <https://kaggle.com/datasets/krupadharamshi/fuelconsumption?resource=download> En el sitio encontrará referencias para comprender los datos.
 
+```{r}
+datos <- read.csv("datos/FuelConsumption.csv")
+datos
+```
+
 -   Asegurese de controlar el tipo de datos de cada columna. Por ejemplo, CYLINDERS debería ser integer, MAKE podría ser factor. Decida usted qué tipo de datos representa mejor a cada variable.
+
+```{r}
+datos$MAKE <- as.factor(datos$MAKE)
+datos
+```
 
 -   Cree al menos una columna usando información de las otras.
 
+```{r}
+datos$INFO <- paste(datos$MAKE, datos$MODEL, datos$VEHICLE.CLASS)
+datos
+```
+
 -   Convierta el dataset a Tidy. Hágalo como le parezca, tendremos tiempo de discutir estas decisiones. Puede usar la función pivot_longer().
+
+```{r}
+datos_tidy <- as.tibble(datos)
+datos_tidy
+```
 
 -   Cree un nuevo tibble con información parcial del dataset anterior. Puede filtrar y reducir la cantidad de filas y elegir algunas columnas.
 
+```{r}
+datos_tidy <- subset(datos_tidy, select = -c(MAKE, MODEL, VEHICLE.CLASS))
+datos_tidy
+```
+
 -   Guarde los datos del nuevo tibble en un archivo.csv externo. Verifique que puede leerlos fuera de R y volver a cargarlos a R.
 
+```{r}
+write.csv(datos_tidy, file = "./datos/datosTidyExportado.csv")
+```
+
 -   Guarde los datos del nuevo tibble y los del archivo original en dos tablas de una base de datos SQLite. Verifique que puede leerlos fuera de R y volver a cargarlos a R.
+```{r}
+library(RSQLite)
+
+## Creo la conexion y guardo las tablas en el archivo creado
+connection <- dbConnect(RSQLite::SQLite(), "./datos/SQLite.db")
+dbWriteTable(connection, "TablaTidy", datos_tidy, overwrite = TRUE)
+dbWriteTable(connection, "TablaComun", datos, overwrite = TRUE)
+```
+
+```{r}
+tibble(dbGetQuery(connection, "SELECT * FROM TablaTidy LIMIT 10"))
+dbGetQuery(connection, "SELECT * FROM TablaComun LIMIT 10")
+```
 
 ## Girasol
 
@@ -45,7 +91,28 @@ Parcelas de 10 pl/m2. 230 221 223 209 233 230 231 221 213 214 219 238 229 224 23
 
 -   Cree un tibble con la información del experimento.
 
+```{r}
+VectorParcela1 <- rep("5pl/m2", 40)
+VectorParcela2 <- rep("10pl/m2", 40)
+
+tibbleGirasol <- tibble(
+  "Parcela" = as.factor(c(VectorParcela1, VectorParcela2)),
+  "Altura" = c(c(213, 221, 220, 210, 205, 224, 215, 212, 225, 216, 207, 205, 215, 213, 213, 215, 214, 199, 215, 215, 210, 201, 209, 204, 197, 202, 221, 221, 226, 219, 215, 222, 212, 208, 208, 219, 198, 217, 208, 193), c(230, 221, 223, 209, 233, 230, 231, 221, 213, 214, 219, 238, 229, 224, 230, 226, 208, 216, 222, 218, 222, 219, 222, 223, 234, 211, 226, 217, 233, 211, 231, 220, 219, 226, 227, 226, 218, 215, 224, 229))
+)
+
+tibbleGirasol
+```
+
 -   Guarde esa información en un archivo .csv y en otra tabla de la base de datos SQLite.
+
+```{r}
+write.csv(tibbleGirasol, file = "./datos/tibbleGirasolExportado.csv")
+dbWriteTable(connection, "tibbleGirasol", tibbleGirasol)
+```
+
+```{r}
+dbGetQuery(connection, "SELECT * FROM tibbleGirasol LIMIT 10")
+```
 
 ## Acceder a la información de un tibble
 
@@ -53,15 +120,73 @@ Parcelas de 10 pl/m2. 230 221 223 209 233 230 231 221 213 214 219 238 229 224 23
 
 -   Extraiga el dato contenido en una celda.
 
+```{r}
+datoSeleccionado <- datos_tidy[[1,8]]
+datoSeleccionado
+```
+
 -   Extraiga todos los datos de un automovil en particular.
+
+```{r}
+datoSeleccionado <- datos_tidy[1,]
+datoSeleccionado
+```
 
 -   Muestre los valores de una variable para todos los automóviles disponibles.
 
+```{r}
+library(dplyr)
+
+# La columna a ordenar es "ENGINE.SIZE"
+datosSeleccionados <- datos_tidy %>% 
+  select(ENGINE.SIZE) %>%  # Seleccionar la columna "ENGINE.SIZE"
+  distinct() %>%  # Obtener valores únicos como tibble
+  mutate(ENGINE.SIZE = as.numeric(ENGINE.SIZE)) %>% # Convertir la columna a numérico
+  arrange(desc(ENGINE.SIZE))  # Ordenar de mayor a menor
+
+# Imprimir el resultado
+print(datosSeleccionados)
+```
+
 -   Calcule el consumo de combustible promedio de los vehículos con 4 cilindros.
 
+```{r}
+library(dplyr)
+
+promedioConsumoCombustible <- datos_tidy %>%
+  filter(CYLINDERS >= 4) %>%
+  pull(FUEL.CONSUMPTION) %>%
+  mean()
+
+promedioConsumoCombustible
+```
+
 -   Muestre las emisiones de CO2 de los autos compactos de AUDI.
+
+```{r}
+emisionCO2 <- datos_tidy %>%
+  filter(str_detect(INFO, "AUDI")) %>%
+  pull(COEMISSIONS) %>%
+  sum()
+
+emisionCO2
+```
 
 ### Girasol
 
 -   ¿Cuál es el promedio de altura de cada tratamiento?
 
+```{r}
+promedioAltura5 <- tibbleGirasol %>%
+  filter(str_detect(Parcela, "5pl/m2")) %>%
+  pull(Altura) %>%
+  mean()
+
+promedioAltura10 <- tibbleGirasol %>%
+  filter(str_detect(Parcela, "10pl/m2")) %>%
+  pull(Altura) %>%
+  mean()
+
+promedioAltura5
+promedioAltura10
+```
