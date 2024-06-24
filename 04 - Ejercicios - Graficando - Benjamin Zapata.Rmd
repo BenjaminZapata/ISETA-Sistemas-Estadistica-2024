@@ -19,6 +19,7 @@ Cargue las librerías necesaria cuando las necesite, no lo haga al inicio de la 
 
 ```{r}
 library(RSQLite)
+library(dplyr)
 
 connection <- dbConnect(RSQLite::SQLite(), "./datos/SQLite.db")
 datosGirasol <- dbGetQuery(connection, "SELECT * FROM tibbleGirasol")
@@ -34,6 +35,8 @@ datosGirasol
 
 ```{r}
 library(ggplot2)
+library(patchwork)
+library(stringr)
 
 datosGirasol5 <- datosGirasol %>%
   filter(str_detect(Parcela, "5pl/m2"))
@@ -142,13 +145,26 @@ graficoGirasolViolin
 -   Superponga en un mismo gráfico un histograma y un Polígono de Frecuencias.
 
 ```{r}
-graficoGirasolHis + graficoGirasolFreq
+graficoHistoYFreq <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Pol. Frecuencia") +
+  aes(x = Altura, alpha = 0.5) +
+  geom_histogram(fill = "pink") + 
+  geom_freqpoly(color = "red") + 
+  facet_wrap(vars(Parcela), dir = "v")
+
+graficoHistoYFreq
 ```
 
 -   Superponga en un mismo gráfico un BoxPlot y un Violín.
 
 ```{r}
-graficoGirasolBox + graficoGirasolViolin
+graficoGirasolBoxYViolin <- ggplot(datosGirasol) +
+  ggtitle("Girasoles - Boxplot") +
+  aes(y = Altura, x = Parcela, alpha = 0.5) +
+  geom_violin(color = "red", fill = "pink") +
+  geom_boxplot(color = "blue", fill = "lightblue")
+  
+graficoGirasolBoxYViolin
 ```
 
 # Cargar datos de Fuel Consumption

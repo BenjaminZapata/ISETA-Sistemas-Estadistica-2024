@@ -11,9 +11,26 @@ Se pretende que resuelvan estos ejercicios con simulaciones Montecarlo. En clase
 
 Hay una reunión de 50 personas. Utilizando simulación de Montecarlo estimemos cuál es la probabilidad de qué hayan al menos dos personas que cumplan años el mismo día. (Obviemos a los que cumplen años el 29 de febrero).
 
+```{r}
+dias <- 1:365
+cantidadPersonas <- 23
+veces <- 10000
+
+resultados <- replicate(veces, {
+  personas <- sample(dias, cantidadPersonas, replace = TRUE)
+  any(duplicated(personas))
+})
+
+paste("El porcentaje con ", cantidadPersonas, " personas es de ",mean(resultados) * 100, "%", sep = "")
+```
+
 ### Ejercicio 2. Dos cumplen el mismo día
 
 ¿Cuántas personas debe haber reunidas para que la probabilidad de que dos de ellas cumplan años el mismo día sea mayor al 50%?
+
+```{r}
+
+```
 
 ### Ejercicio 3. Simulación acerca de cómo contar los taxis en una ciudad
 
