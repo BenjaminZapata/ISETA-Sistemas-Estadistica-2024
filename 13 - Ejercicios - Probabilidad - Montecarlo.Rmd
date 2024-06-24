@@ -9,7 +9,7 @@ Se pretende que resuelvan estos ejercicios con simulaciones Montecarlo. En clase
 
 ### Ejercicio 1. Dos cumplen el mismo día
 
-Hay una reunión de 50 personas. Utilizando simulación de Montecarlo estimemos cuál es la probabilidad de qué hayan al menos dos personas que cumplan años el mismo día. (Obviemos a los que cumplen años el 29 de febrero).
+Hay una reunión de 50 personas. Utilizando simulación de Montecarlo estimemos cuál es la probabilidad de qué haya al menos dos personas que cumplan años el mismo día. (Obviemos a los que cumplen años el 29 de febrero).
 
 ```{r}
 dias <- 1:365
@@ -38,7 +38,9 @@ Fuente: Miró, Ricardo (2006). Números combinatorios y probabilidades. Colecci�
 
 El objetivo del ejercicio es estimar la cantidad de taxis que hay en una ciudad determinada (Ej. Buenos Aires). Para ello una persona se para en una esquina de la ciudad (preferentemente una esquina con mucha circulación de taxis) y registra las matrículas de todos los taxis que pasan (están escritas en la puerta). Se supone que las matrículas van desde el 1 hasta la cantidad total de taxis habilitados. Luego la cantidad total de taxis será el promedio de los números de matrícula multiplicado por 2.
 
-### Ejercicio 4. El mismo ejercicio puede hacerse con billetes para conocer la cantidad de dinero circulante. Hay que estimarlo para cada denominación.
+### Ejercicio 4. Contar billetes circulando
+
+El mismo ejercicio puede hacerse con billetes para conocer la cantidad de dinero circulante. Hay que estimarlo para cada denominación.
 
 Es interesante discutir las diferencias y pensar qué circunstancias pueden hacer fallar los cálculos y en qué sentido sesgarían el resultado.
 
@@ -54,4 +56,4 @@ Es interesante discutir qué circunstancias pueden hacer fallar los cálculos y 
 
 Fuente: Felizia, Eduardo (1994). El dilema de Perseo. Ciencia Hoy, Buenos Aires, Argentina. Vol 5, N° 26, pgs 58-61. <https://drive.google.com/file/d/1XhsddWr398AoqsccWXdhL158ZpuP3ISt/view?usp=share_link> Esta mítica diyuntiva puede, en realidad, ser más frecuente de lo que uno supone. El autor discute el dilema y nos provee de una respuesta al mismo.
 
-Perseo debe rescatar a la bella Andrómeda prisionera en una caverna cuyo acceso está bloqueado con rocas. El probglema es que hay tres cavernas idénticas: una de ellas aloja a Andrómeda y en cada una de las otras dos se oculta una górona, monstruo legendario con poderes para petrificar a los intrusos con sólo una mirada. Perseo consulta a Pegasa - la urraca mítica - quién manifiesta saber en qué caverna se encuentra Andrómeda, pero no le es permitido revelar el secreto so pena de terrible castigo por parte de los dioses; sin embargo puede ayudar a Perseo. Éste dice que, a su parecer, Andrómeda está en la caverna del centro; Pegasa informa entonces que en la de la izquierda hay una górgona. Aquí se presenta el dilema, ¿aumentan las posibilidades de Perseo de acertar con la caverna correcta si toma en cuenta la revelación de Pegasa y modifica su apreciación inicial?
+Perseo debe rescatar a la bella Andrómeda prisionera en una caverna cuyo acceso está bloqueado con rocas. El problema es que hay tres cavernas idénticas: una de ellas aloja a Andrómeda y en cada una de las otras dos se oculta una górona, monstruo legendario con poderes para petrificar a los intrusos con sólo una mirada. Perseo consulta a Pegasa - la urraca mítica - quién manifiesta saber en qué caverna se encuentra Andrómeda, pero no le es permitido revelar el secreto so pena de terrible castigo por parte de los dioses; sin embargo puede ayudar a Perseo. Éste dice que, a su parecer, Andrómeda está en la caverna del centro; Pegasa informa entonces que en la de la izquierda hay una górgona. Aquí se presenta el dilema, ¿aumentan las posibilidades de Perseo de acertar con la caverna correcta si toma en cuenta la revelación de Pegasa y modifica su apreciación inicial?

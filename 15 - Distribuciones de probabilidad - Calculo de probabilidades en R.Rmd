@@ -360,16 +360,6 @@ num.aleatorios
 
 NOTA: Se ha fijado la semilla set.seed(1) para generar siempre los mismos números aleatorios, puesto que en caso contrario se reproducirían números diferentes cada vez que se ejecute el código. También se ha utilizado la función sort() para ordenar los números aleatorios generados de menor a mayor. Una vez generados los números aleatorios, se procede a extraer las unidades de la muestra, cuyo fichero contiene la información de los 40 pacientes seleccionados.
 
-```{r}
-#library(foreign)
-#osteo = read.spss("osteo.sav", to.data.frame = TRUE)
-#osteo.muestra = osteo[num.aleatorios,]
-#nrow(osteo.muestra)
-```
-
-```{r}
-#head(osteo.muestra)
-```
 
 
 

@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 /estudiantes
+/objetos
 *.Rproj
 *.html
 borrador-*.*
