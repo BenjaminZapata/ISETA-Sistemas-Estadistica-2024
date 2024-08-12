@@ -76,6 +76,7 @@ n = 50
 p = 0.35
 valor = 20
 dbinom(valor, size = n, prob = p)
+pbinom(valor, size = n, prob = p)
 ```
 
 ```{r}
@@ -94,10 +95,8 @@ calcular las dos posibilidades con las opciones habilitadas en R.
 ```{r}
 valor = 14
 pbinom(valor, size = n, prob = p, lower.tail = FALSE)
-```
-
-```{r}
 1 - pbinom(valor, size = n, prob = p)
+pbinom(valor, size = n, prob = p, lower.tail = TRUE)
 ```
 
 ```{r}
@@ -123,8 +122,7 @@ ggplot(df, aes(x = x, y = y, fill = factor(ifelse(x >= valor2 + 1 & x <= valor1,
   scale_fill_manual(name = "", values=c("grey50", "red")) + theme_bw()
 ```
 
-4. Calcular el valor de la variable tal que deja a su derecha un 70% de las observaciones. El valor de la variable que deja a su derecha un 70% de las observaciones es el mismo que deja a su izquierda el 30%
-restante, por lo que se pide calcular el valor q tal que P[X ≤ q] = 0.30.
+4. Calcular el valor de la variable tal que deja a su derecha un 70% de las observaciones. El valor de la variable que deja a su derecha un 70% de las observaciones es el mismo que deja a su izquierda el 30% restante, por lo que se pide calcular el valor q tal que P[X ≤ q] = 0.30.
 
 ```{r}
 a = 0.30

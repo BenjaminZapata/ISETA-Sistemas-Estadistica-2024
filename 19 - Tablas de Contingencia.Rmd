@@ -132,7 +132,7 @@ oddsratio(tabla_contingencia)
 riskratio(tabla_contingencia)
 ```
 
-Para corroborar el resultado podemos calcular la inversa de log(x)=y que es e^y=x (en r esta función es exp() ), o podemos calcular el log al OR calculado.
+Para corroborar el resultado podemos calcular la inversa de log(x)=y que es e^y=x (en r esta función es exp() ), o podemos calcular el log() al OR calculado.
 
 ```{r}
 exp(0.9650809)

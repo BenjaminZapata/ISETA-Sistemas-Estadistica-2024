@@ -1,0 +1,130 @@
+---
+title: "Probabilidad - Inferencia - Bayes - Teorema"
+output: html_notebook
+---
+
+# Teorema de Bayes
+
+### Fuente: Arbital.com.
+
+"Bayes' rule: Guide". <https://arbital.com/p/bayes_rule/?l=1zq>
+
+El razonamiento bayesiano trata sobre cómo revisar nuestras creencias a la luz de la evidencia.
+
+Partamos de un ejemplo. 
+
+Existe una enfermedad que aqueja a un grupo de personas. El 20% de las personas está enferma (E) y por lo tanto el 80% restante está sana (S). Existe además un test para detectar la enfermedad. El problema es que el test da positivo en el 90% de las personas enfermas (las E) a las que se les hace el test y además da positivo al 30% de las personas sanas (las S).
+
+Alguien le hace el test a un paciente y el test da positivo. ¿Cuál es la probabilidad de que el paciente testeado tenga la enfermedad?
+
+|          | Positivos (+) | Negativos (-) | Tot | p() | Falsos          |
+|----------|---------------|---------------|-----|-----|-----------------|
+| Enfermos | 20\*0.9 = 18  | 20\*0.1 = 2   | 20  | 0.2 | negativos = 0.1 |
+| Sanos    | 80\*0.3 = 24  | 80\*0.7 = 56  | 80  | 0.8 | positivos = 0.3 |
+| Tot      | 42            | 58            | 100 |     |                 |
+| p()      | 0.42          | 0.58          |     | 1   |                 |
+| p(E)     | 18/42 = 0.429 | 2/58 = 0.034  |     |     |                 |
+| p(S)     | 24/42 = 0.571 | 56/58 = 0.966 |     |     |                 |
+
+```{r, echo=FALSE}
+enf <- c(10,10,10,10,10,10,10,10,10,1)
+san <- c(12,12,12,0,0,0,0,0,0,0)
+dibujo <- matrix(c(enf,enf,san,san,san,san,san,san,san,san), nrow = 10, byrow = TRUE)
+```
+
+En el siguiente esquema se representan las personas y su condición. Los círculos representan personas con la enfermedad (E) y los cuadrados las personas sin la enfermedad (S). Los símbolos vacíos son las personas que dan negativo (-) al test y los que tienen una cruz representan los casos positivos (+).
+
+```{r, echo=FALSE}
+par(mar=c(1,5,1,1))
+plot(0,0 , xlim=c(1,10) , ylim=c(0,10.5), col="white" , yaxt="n" , ylab="" , xlab="")
+for (fila in seq(1,10)){
+  for (columna in seq(1,10)){
+    points(columna, 11-fila, pch=dibujo[fila,columna] , cex=2)
+  }
+}
+text(5 , 0 , "+ -> Positivos       en blanco -> Negativos" )
+axis(2, at = 1:10, labels = c("Sanos", "Sanos", "Sanos", "Sanos", "Sanos", "Sanos", "Sanos", "Sanos", "Enfermos", "Enfermos" ), 
+     tick = FALSE, col = "black", las = 1, cex.axis = 1)
+```
+
+## Expresión matemática del teorema de Bayes
+
+$$
+P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
+$$
+
+donde:
+
+-   P( A \| B ) = es la probabilidad de A dado que B ha ocurrido.
+-   P( B \| A ) = es la probabilidad de B dado que A ha ocurrido.
+-   P( A ) = es la probabilidad a priori de A.
+-   P( B ) = es la probabilidad a priori de B.
+
+## Ejemplos
+
+En nuestro caso podríamos calcular los siguientes ejemplos.
+
+### Ejemplo 1
+
+La probabilidad de estar Enfermo cuando el test dió positivo. Esta es la respuesta a la pregunta inicial, le parece contraintuitivo?, es normal, siga pensando.
+
+$$
+P(E|+) = \frac{P(+|E) \cdot P(E)}{P(+)} = \frac{0.9 \cdot 0.2}{0.42} = 0.429
+$$
+
+### Ejemplo 2
+
+La probabilidad de estar Enfermo cuando el test dió negativo
+
+$$
+P(E|-) = \frac{P(-|E) \cdot P(E)}{P(-)} = \frac{0.1 \cdot 0.2}{0.58} = 0.034
+$$
+
+### Ejemplo 3
+
+La probabilidad de estar Sano cuando el test dió negativo
+
+$$
+P(S|-) = \frac{P(-|S) \cdot P(S)}{P(-)} = \frac{0.7 \cdot 0.8}{0.58} = 0.996
+$$
+
+### Ejemplo 4
+
+La probabilidad de estar Sano cuando el test dió positivo
+
+$$
+P(S|+) = \frac{P(+|S) \cdot P(S)}{P(+)} = \frac{0.3 \cdot 0.8}{0.42} = 0.571
+$$
+
+## Simulación Montecarlo
+
+```{r}
+virus <- rep(c("E", "S"), times = c(2, 8))
+testE <- rep(c("+","-"), times = c(9,1))
+testS <- rep(c("+","-"), times = c(3,7))
+
+resultados <- replicate(100000, {
+  persona <- ""
+  if (sample(virus, 1) == "E") {
+    persona <- paste(persona, "E")
+    persona <- paste(persona, sample(testE, 1))
+  } else {
+    persona <- paste(persona, "S")
+    persona <- paste(persona, sample(testS, 1))
+  }
+  persona
+  })
+
+table(resultados)
+proportions(table(resultados))
+```
+
+# Bayes multinomial
+
+A siguiente expresión muestra un caso donde B tiene dos posibilidades B y el complemento B, en cambio A tiene varias (n) posibilidades. Por eso la P(A) es la suma expresada en el denominador.
+
+$$
+P(A|B) = \frac{P(B|A) \cdot P(A)}{\sum_{k=1}^{n} P(B|A_{k}) \cdot P(A_{k})}
+$$
+
+

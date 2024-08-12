@@ -178,6 +178,7 @@ server <- function(input, output) {
                                     y = y_vals[x_vals <= x]), 
                   aes(x, y), fill = "steelblue", alpha = 0.7) +
         geom_point(aes(x = x, y = pnorm(x, mean, sd)), color = "red", size = 3) +
+        geom_vline(xintercept = x, color = "orange") +
         labs(title = paste("P(X <=", x, ")"),
              x = "x",
              y = "P(X ≤ x)") +

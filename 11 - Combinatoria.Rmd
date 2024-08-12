@@ -3,7 +3,6 @@ title: "11 - Combinatoria"
 output: 
   html_notebook: 
     toc: true
-    fig_caption: true
 ---
 
 Para abordar el problema de la "probabilidad", que está en los fundamentos más básicos de la estadística, se debe conocer la teoría matemática que trata sobre los arreglos diferentes que se puede obtener en conjuntos de elementos en diferentes situaciones. Esta especialidad dentro de la matemática se llama Combinatoria. En este capítulo vamos a abordar este problema.
@@ -110,6 +109,13 @@ $$
 
 es decir que las permutaciones son el caso especial de las variaciones en el cual se toman todos los elementos del conjunto de referencia.
 
+y que:
+
+$$
+C_{m,k} . P_{k} =\frac{m!}{(m-k)! . \not k!}.\not k! = \frac{m!}{(m-k)!} = V_{m,k}
+$$
+son los dos pasos propuestos en el ejemplo de Variaciones que encontrará un poco más adelante.
+
 ## Ejemplos
 
 Para ejemplificar imaginemos un aula con cierta cantidad de bancos y un grupo de estudiantes que usarán el aula.
@@ -181,13 +187,7 @@ paste("La cantidad total de posibilidades es: ", nrow(combinaciones))
 paste("Calculado con la fórmula: ", factorial(cantidadEstudiantes) / (factorial(cantidadEstudiantes - cantidadBancos) * factorial(cantidadBancos)) )
 ```
 
-### Nótese
 
-que si hacemos los dos pasos propuestos en el ejemplo de Variaciones, entonces:
-
-$$
-C_{m,k} . P_{k} =\frac{m!}{(m-k)! . \not k!}.\not k! = \frac{m!}{(m-k)!} = V_{m,k}
-$$
 
 ```{r}
 cantComb <- nrow(combinations(7, 4, 1:7, set = TRUE, repeats.allowed = FALSE))

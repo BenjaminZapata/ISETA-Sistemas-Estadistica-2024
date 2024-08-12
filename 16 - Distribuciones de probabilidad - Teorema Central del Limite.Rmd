@@ -13,6 +13,14 @@ help(Distributions) # Esto le permitirá ver distribuciones alternativas
 
 # Teorema Central del Límite
 
+## Teoría
+
+Aquí les dejo un excelente video acerca de este teorema. Es un video muy visual, muy matemático y conceptualmente no he visto nada más completo y correcto.
+
+Canal 3Blue1Brown
+Pero ¿qué es el teorema del límite central?
+<https://youtu.be/zeJD6dqJ5lo?si=obT-ByAeuk2a7J0d>
+
 ## Distribución homogénea
 
 Vamos a construir una población de referencia. Para comenzar gueneramos números al azar entre 0 y 100 donde cada número tiene la misma probabilidad de apareccer. Esa población constará de 50000 números en total.

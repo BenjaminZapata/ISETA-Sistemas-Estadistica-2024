@@ -170,6 +170,7 @@ server <- function(input, output) {
       ggplot(data.frame(x = x_vals, y = y_vals), aes(x, y)) +
         geom_line(color = "steelblue", size = 1) +
         geom_point(aes(x = x, y = ppois(x, lambda)), color = "red", size = 3) +
+        geom_vline(xintercept = x, color = "orange") +
         labs(title = paste("P(X <=", x, ")"),
              x = "x",
              y = "P(X ≤ x)") +
