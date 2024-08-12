@@ -5,7 +5,7 @@ output:
     toc: true
 ---
 
-# Estudiante: SuNombre
+# Estudiante: Benjamin Zapata
 
 Para realizar estos ejercicios use como referencia el documento "05 - Tendencia central y varianza.Rmd".
 
