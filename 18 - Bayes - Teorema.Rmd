@@ -1,5 +1,5 @@
 ---
-title: "Probabilidad - Inferencia - Bayes - Teorema"
+title: "18 - Probabilidad - Inferencia - Bayes - Teorema"
 output: html_notebook
 ---
 

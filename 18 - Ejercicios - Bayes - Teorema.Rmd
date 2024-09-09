@@ -1,0 +1,30 @@
+---
+title: "18 - Ejercicios - Bayes - Teorema"
+output: html_notebook
+---
+
+# Teorema de Bayes
+
+## 1. Calidad de un Producto
+
+En una fábrica, el 5% de los productos están defectuosos. Un inspector de calidad tiene una tasa de 90% de identificar correctamente los productos defectuosos (sensibilidad) y una tasa de 95% de identificar correctamente los productos no defectuosos (especificidad). Si un producto es identificado como defectuoso, ¿cuál es la probabilidad de que realmente sea defectuoso?
+
+## 2. Tortas y helados
+
+En un pueblito la probabilidad de que a una persona seleccionada al azar le guste el helado es del 60 %, mientras que la probabilidad de que a un alumno le guste la torta es del 36 %. Además, se sabe que la probabilidad de que a una persona que le gusta el helado además le guste la torta es del 40 %. Calcular la probabilidad de que a una persona que le gusta la torta le guste el helado.
+
+## 3. Bolillas rojas y verdes
+
+Una de dos cajas contiene 4 bolas rojas y 2 bolas verdes y la segunda caja contiene 4 bolas verdes y dos rojas. Usted arroja un dado y si el número es primo selecciona la caja 2 encambio si no es primo selecciona la caja 1. Una vez seleccionada la caja de ella se extrae al azar una bola.
+(un número primo es aquel que es divisible sólo por él mismo y por 1).
+
+a) Si la bola seleccionada es roja, ¿cuál es la probabilidad de que haya sido seleccionada de la primera casilla?
+b) Si la bola seleccionada es roja, ¿cuál es la probabilidad de que haya sido seleccionada de la segunda casilla?
+c) Compara los resultados de los incisos a) y b) y explica la respuesta.
+
+## 4. 
+
+Tres fábricas producen bombillas para abastecer el mercado. La fábrica A produce el 20%, el 50% se producen en la fábrica B y el 30% en la fábrica C.
+El 2% de las bombillas producidas en la fábrica A, el 1% de las producidas en la fábrica B y el 3% de las producidas en la fábrica C son defectuosas.
+Se selecciona una bombilla al azar en el mercado y se encuentra defectuosa. ¿Cuál es la probabilidad de que esta bombilla haya sido producida por la fábrica B?
+

@@ -5,6 +5,8 @@ output:
     toc: true
 ---
 
+> Este notebook todavía está muy verde e incompleto!!
+
 ## Variables cualitativas
 
 ```{r}
@@ -20,7 +22,7 @@ library(finalfit)
 persona <- 1:108
 edad <- sample(c("Joven", "Jovato", "Jovie"), 108, replace = TRUE, prob=c(30, 45, 20))
 edad <- factor(edad, levels = c("Joven", "Jovato", "Jovie"), ordered = TRUE)
-voto <- sample(c("JxC","UxP","LLA"),108, replace = TRUE, prob=c(25,32,30))
+voto <- sample(c("Fafas","Tupas","Mulos"),108, replace = TRUE, prob=c(22,34,30))
 voto <- factor(voto)
 
 datos <- tibble(persona, edad, voto)
@@ -80,21 +82,25 @@ writeLines("\n")
 chiTc1
 ```
 
+```{r}
+psych::describe(datos)
+```
+
 # Odds Ratio
 
 Es importante diferenciar un odd (en español razón) de una probabilidad. Los odds expresan cuántos individuos de un grupo tienen una característica respecto de los que tienen otra característica. La probabilidades en cambio expresan cuántos individuos tienen una característica respecto del total del grupo (incluídos ellos mismos).
 
 
-ACV / Fuma          Si        No        Odds
---------------   -------    -------    -------
-      Si            a         b         a/b
-      NO            c         d         c/d
+ACV / Fuma          Si        No        Odds     Probabilidad
+--------------   -------    -------    -------    -------
+      Si            a         b         a/b         a/a+b
+      NO            c         d         c/d         c/c+d
 Odds               a/c       b/d
 Probabilidad      a/a+c     b/b+d
---------------   -------    -------    -------
+--------------   -------    -------    -------    -------
 Odds Ratio = (a/c) / (b/d)
 
-a/c = es el odds de los "Fumadores". Esto dice cuantos casos de ACV hay respecto de los casos que no tienen ACV dentro de los "Fumadores" Cuanto payor proporción de ACV, mayor es este número. Si el valor es 0.5 significa que hay tantos casos positivos de ACV como negativos.
+a/c = es el odds de los "Fumadores". Esto dice cuantos casos de ACV hay respecto de los casos que no tienen ACV dentro de los "Fumadores" Cuanto mayor proporción de ACV, mayor es este número. Si el valor es 0.5 significa que hay tantos casos positivos de ACV como negativos.
 
 b/d = es el odds de los "NO Fumadores". Esto es lo mismo pero en el otro grupo, los "NO Fumadores".
 
@@ -102,17 +108,17 @@ El Odds Ratio (OR) es la razón entre los odds anteriores, de los "Fumadores" re
 
 También se puede calcular los Odds y OR para las filas, la interpretación es algo diferente y la conclusión se expresa direfente, pero la esencia del fenómeno es el mismo.
 
-Si este ejercicio se hace con las probabilidades en lugar de los odds, entonces el equivalente al OR lo llamanos "Riesgo Relativo". El OR puede variar entre 0 e infinito, mientras que el Riesgo Relativo varía entre 0 y 1, siendo 0.5 el mismo riesgo entre los dos grupos.
+Si este ejercicio se hace con las probabilidades en lugar de los odds, entonces el equivalente al OR lo llamanos "Riesgo Relativo" (RR). El OR y el RR pueden variar entre 0 e infinito, siendo 1 el mismo Odds entre los dos grupos, y 0.5 el mismo riesgo entre los dos grupos.
 
 ## Un ejemplo
 
-ACV / Fuma          Si        No        Odds
---------------   -------    -------    -------
-      Si            7         6         7/6
-      NO           40        90        40/90
+ACV / Fuma          Si        No        Odds     Probabilidad
+--------------   -------    -------    -------    -------
+      Si            7         6         7/6         7/13
+      NO           40        90        40/90       40/130
 Odds              7/40      6/90
 Probabilidad      7/47      6/96
---------------   -------    -------    -------
+--------------   -------    -------    -------    -------
 OR = (7/40) / (6/90) = 2.625
 
 Riesgo Relativo = (7/47) / (6/96) = 2.38
@@ -151,40 +157,5 @@ satsTc1
 ```
 
 
-```{r}
-psych::describe(datos)
-```
 
-# Pruebas. En esto estoy experimentando...
-
-```{r}
-# fitTc1 <- datos %>% 
-#   finalfit("voto", "edad", metrics = TRUE,
-#            dependent_label_prefix = "")
-# fitTc1
-```
-
-```{r}
-# fitTc1 <- datos %>% 
-#   summary_factorlist("voto", "edad", p=TRUE, add_col_totals =TRUE, add_row_totals =TRUE)
-# fitTc1
-```
-
-
-```{r}
-# datos %>% or_plot("voto", "edad")
-```
-
-```{r}
-# serie para calcular la constante de Euler e. Cuando n tiende a infinito el resultado tiende a e.
-
-# el valor de e se puede calcular
-# 
-# paste("valor de e =", exp(1))
-# 
-# print("Serie")
-# for (n in 1:100) {
-#   print((1+(1/n))^n)
-# }
-```
 
