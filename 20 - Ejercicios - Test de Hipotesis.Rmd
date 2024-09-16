@@ -44,15 +44,15 @@ cigarrillos <- c(0.71, 0.75, 0.67, 0.68, 0.72, 0.58, 0.69, 0.71, 0.61, 0.67, 0.7
 > Primero hago el cálculo a mano. Estos datos además van a usarse para graficar. Suponemos, como indica el enunciado, que se trata de una distribución Normal. pnorm() calcula la probabilidad acumulada hasta el valor (estPrueba), consideramos la cola izquierda, por eso en este caso la usamos directamente. Si la hipótesis se planteara al revés deberíamos usar 1 - pnorm(), que calcula la cola derecha.
 
 ```{r}
-mu <- 0.7 # Valor de refererncia
+mu <- 0.7 # Valor de referencia
 media0 <- mean(cigarrillos) # media de la muestra
 n <- length(cigarrillos) # tamaño de la muestra
 sdCig <- sd(cigarrillos) # Desvío Estándar
 eE <- sdCig / sqrt(n) # Error Estándar
 
-estPrueba <- (media0- mu) / (sdCig / sqrt(n))
+estPrueba <- (media0 - mu) / (sdCig / sqrt(n))
 
-valor_p <-pnorm(estPrueba, mean = 0, sd = 1) # esto equivale a mirar la tabla Normalizada, por eso usamos media 0 y sd 1
+valor_p <- pnorm(estPrueba, mean = 0, sd = 1) # esto equivale a mirar la tabla Normalizada, por eso usamos media 0 y sd 1
 
 valor_p
 ```
@@ -114,36 +114,164 @@ d.  Concluir e interpretar aclarando el alcance de la inferencia realizada.
 
 > Además la probabilidad de que un cigarrillo tenga más de 0.7 mg de Nicotina es 0.414 (pNicotinaAlta), que es el área violeta mostrada en el gráfico superior izquierdo (g3), lo que indica que de cada 10 cigarrillos que alguien fuma, 4 están excedidos en Nicotina.
 
-## 2. Emisiones de CO2 por automóviles
+## 2. Emisiones de CO por automóviles
 
 Una compañía productora de automotores asegura que los autos del modelo que ofrece para ser equipado como taxi cumplen en promedio con la norma de la Agencia de Protección Ambiental de los Estados Unidos que establece que estos vehículos deben emitir menos de 2,5 gramos de monóxido de carbono por kilómetro. Para decidir si dar por cierta esta afirmación se decide obtener una muestra aleatoria de 25 de estos vehículos matriculados como taxis en la ciudad de San Francisco y medir el nivel de emisión de monóxido de carbono de cada uno. Con los datos obtenidos se calcula la media muestral (2,44 g/km) y el estimador insesgado de la varianza (0,021 g2/k㎡).
 
 a.  Formular hipótesis estadísticas apropiadas para tomar la decisión en cuestión. Enunciar el significado de cada hipótesis en términos del fenómeno de interés.
+
+$$
+H_{0}: \mu_0 \geq 2.5 \\
+H_{1}: \mu_0 < 2.5
+$$
+
 b.  Seleccionar un nivel de significación apropiado. ¿Qué implica el valor elegido?
+
+  > Debido a que se trata de un asunto que impacta en el bienestar del medioambiente, y la salud de los ciudadanos, decidimos aceptar un minimo margen de error, solo el 0.01%. + cantidad poblacion
+  
 c.  ¿En qué consiste el procedimiento para generar los datos necesarios para poner a prueba las hipótesis propuestas?
+
+```{r}
+# Parámetros del problema
+n <- 25  # Tamaño de la muestra
+media_muestral <- 2.44  # Media muestral
+varianza_muestral <- 0.021  # Varianza muestral
+
+# Generar los datos aleatorios
+set.seed(105)  # Establecer semilla para reproducibilidad
+desviacion_estandar <- sqrt(varianza_muestral)  # Obtener la desviación estándar
+datos <- rnorm(n, mean = media_muestral, sd = desviacion_estandar)
+# REVISAR ESTO - Aplicar Montecarlo
+# Mostrar los datos generados
+print(datos)
+
+# Realizar la prueba t para comparar la media con el valor de 2.5
+resultado_prueba <- t.test(datos, mu = 2.5, alternative = "less")
+
+# Mostrar el resultado de la prueba
+print(resultado_prueba)
+
+# Acceder al valor p y mostrarlo
+p_value <- resultado_prueba$p.value
+cat("El valor p es:", p_value, "\n")
+```
+ 
+ > En el caso de esta semilla, la hipotesis H0 es nula. Por ende la H1 es verdadera. <- Reever generación de muestras, probar montecarlo
+
 d.  Dando por cierto que los niveles de emisión registrados son realizaciones de variables aleatorias con distribución Normal, calcular el valor-p. ¿Qué probabilidad representa?
+
+ > Representa una probabilidad del 0.2%. <- De la media
+ 
 e.  Concluir y explicar la conclusión en términos del fenómeno de interés.
+
+ > Con esto valores, podemos rechazar la hipotesis H0, por lo que podemos decir que los vehiculos cumplen con el promedio de monoxido de carbono por kilometro de la norma de la Agencia de Protección Ambiental. 
+ 
 f.  ¿A qué población se extiende la inferencia realizada?
 
-
+ > La población a la que se extiende la inferencia son todos los vehículos del modelo específico que la compañía produce y que están equipados como taxis. En este caso son 25 vehículos. <- Referir a la poblacion total. Punto a.
+ 
 ## 3. Margen bruto de maíz
 
 Una empresa productora de semillas ofrece un nuevo híbrido de maíz que ha sido puesto a prueba en 12 lotes tomados al azar dentro del partido de Pergamino. En Pergamino el costo de producción de una hectárea de maiz hibrido es de US\$ 325 y el ingreso por cada tonelada vendida es US\$ 50. Los rendimientos obtenidos en cada lote fueron los siguientes (t/ha): 7.2 10.0 8.5 8.4 8.0 7.5 9.0 9.0 8.0 7.0 6.1 8.0
 
 a.    Identificar la poblacion, la muestra y las variables aleatorias consideradas.
+
+ > Población: Todas las hectáreas cultivables con maíz híbrido en Pergamino.
+   Muestra: 12 lotes seleccionados al azar en Pergamino.
+   Variable aleatoria: Rendimiento de maíz híbrido en toneladas por hectárea (t/ha).
+
 b.    Construir un diagrama de cajas y bigotes para los datos de rendimiento de los lotes.
+
+```{r}
+# Datos de rendimiento de los 12 lotes (en toneladas por hectárea)
+rendimientos <- c(7.2, 10.0, 8.5, 8.4, 8.0, 7.5, 9.0, 9.0, 8.0, 7.0, 6.1, 8.0)
+
+# Crear el diagrama de cajas y bigotes (boxplot)
+boxplot(rendimientos, 
+        main = "Diagrama de Cajas y Bigotes - Rendimiento del Maíz Híbrido",#Titulo
+        ylab = "Rendimiento (t/ha)", #Eje y
+        col = "lightblue", 
+        border = "darkblue")
+
+# Agregar líneas para la media. El promedio
+abline(h = mean(rendimientos), col = "red", lty = 2)
+
+```
+
+
 c.    Poner a prueba la hipótesis nula que dice que el margen bruto (la diferencia entre el ingreso y el costo) correspondiente a la media poblacional de los rendimientos que este nuevo hibrido produciría en los lotes del partido de Pergamino no supera los USS 50 por hectarea (Mostrar el desamolio del análisis).
+
+$$
+H_{0}: \mu_0 \leq 50 \\
+H_{1}: \mu_0 > 50
+$$
+
+```{r}
+rendimientos <- c(7.2, 10.0, 8.5, 8.4, 8.0, 7.5, 9.0, 9.0, 8.0, 7.0, 6.1, 8.0)
+
+# Parámetros económicos
+costo_produccion <- 325  # US$/ha
+ingreso_por_tonelada <- 50  # US$/tonelada
+
+# Calcular el margen bruto para cada lote. La ganancia menos el gasto
+margen_bruto <- (rendimientos * ingreso_por_tonelada) - costo_produccion
+
+# Realizar la prueba t para comparar el margen bruto con 50
+resultado_prueba <- t.test(margen_bruto, mu = 50, alternative = "greater")
+
+# Mostrar los resultados de la prueba
+print(resultado_prueba)
+
+# Calcular la media de los márgenes brutos y mostrarla. promedio de ingreso bruto
+media_margen_bruto <- mean(margen_bruto)
+cat("Media del margen bruto:", media_margen_bruto, "US$\n")
+
+#Calcular el p value. 
+p_value <- resultado_prueba$p.value
+cat("El valor p es:", p_value, "\n")
+```
+
 d.    ¿Qué supuesto se dio por cierto para el análisis realizado en c?
+
+> EL P es mayor que el nivel de significación, no hay suficiente evidencia para rechazar H0 y podemos concluir que el margen bruto medio podría ser mayor o igual a 50 US$. Hay un 95% de probabilidad de que gane 50 US$ o más y que sea rentable.
+
+< En este caso, no rechazamos la H0
+
 e.    Sobre la base del resultado obtenido, discutir la conveniencia de adoptar este nuevo hibrido en el partido de Pergamino.
+
+ > Hay evidencia suficiente para decir que el margen bruto medio es meyor a 50 US$/hectárea. Por lo que el híbrido podría ser económicamente viable.
 
 ## 4. Pasto para enfardar
 
 En un establecimiento lechero se proyecta utilizar el pasto presente en una pastura de 20 ha para hacer una reserva de fardos de heno con la qual alimentar a las vacas lecheras durante el invierno. Por ello interesa determinar si los fardos a producir alcanzarán para cubrir la necesidad de 90 t de forraje para dicho período. Para concluir al respecto, se decide tomar una muestra de 25 marcos de 1 m² elegidos al azar dentro de la pastura. En cada marco, se cortará todo el forraje y se lo pesará luego de dejaro secar al aire del mismo modo que se hace para elaborar los fardos. Una vez realizadas las mediciones, se encuentra que el promedio de los pesos obtenidos es de 510 gramos/m² y el estimador del desvío estándar es de 100 g/m²
 
 a.    Identificar las unidades muestrales, la muestra y la población.
+
+> Unidades Muestrales: Marcos de 1 m² dentro de la pastura.
+  Muestra: 25 marcos de 1 m² seleccionados al azar.
+  Población: Todos los marcos de 1 m² en la pastura de 20 hectáreas.
+
+
 b.    Formular hipótesis apropiadas para la evaluación propuesta.
+
+$$
+H_{0}: \mu_0 \geq 450 m2\\
+H_{1}: \mu_0 < 450 m2
+$$
+
 c.    Dando por cierto que el peso del forraje en un marco de 1 m² a elegir al azar en la pastura de 20 ha es una variable aleatoria con distribución Normal, calcular el valor-p y concluir con un nivel de significación ⍺ = 0,01.
+
+```{r}
+
+p_value <- pt(3, df = 24, lower.tail = FALSE)
+print(p_value)
+
+```
+
 d.    Explicar la conclusión en términos de este problema.
+
+>  El valor-p es menor que 0.01, lo que indica que hay evidencia suficiente para concluir que el peso promedio del forraje seco es significativamente menor a 450 gramos/m². Por lo tanto, la pastura no produce suficiente forraje seco para cubrir la necesidad de 90 toneladas, y los fardos de heno no alcanzarían para alimentar a las vacas durante el invierno.
+
 e.    Explicar el tipo de error que se puede haber cometido en este análisis y cuáles serían sus implicancias.
 
 ## 5. Titulación de arsénico

@@ -13,7 +13,7 @@ Hay una reunión de 50 personas. Utilizando simulación de Montecarlo estimemos 
 
 ```{r}
 dias <- 1:365
-cantidadPersonas <- 23
+cantidadPersonas <- 50
 veces <- 10000
 
 resultados <- replicate(veces, {
@@ -29,7 +29,19 @@ paste("El porcentaje con ", cantidadPersonas, " personas es de ",mean(resultados
 ¿Cuántas personas debe haber reunidas para que la probabilidad de que dos de ellas cumplan años el mismo día sea mayor al 50%?
 
 ```{r}
-
+dias <- 1:365
+veces <- 10000
+cantidadPersonas <- 1
+porcentaje <- 0
+while (porcentaje < 50) {
+  cantidadPersonas <- cantidadPersonas + 1
+resultados <- replicate(veces, {
+  personas <- sample(dias, cantidadPersonas, replace = TRUE)
+  any(duplicated(personas))
+})
+  porcentaje <- mean(resultados) * 100
+}
+print(resultados)
 ```
 
 ### Ejercicio 3. Simulación acerca de cómo contar los taxis en una ciudad
