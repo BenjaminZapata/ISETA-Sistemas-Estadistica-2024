@@ -24,7 +24,7 @@ library(ggplot2)
 -   Cargue los datos de Girasol que construyó en la práctica de Data Frames. Recuerde que siempre debe preparar los datos antes de graficarlos.
 
 ```{r}
-conn <- dbConnect(RSQLite::SQLite(), "datos/ejercicioDataFrames.db")
+conn <- dbConnect(RSQLite::SQLite(), "../datos/ejercicioDataFrames.db")
 dbListTables(conn)
 ```
 
@@ -167,7 +167,7 @@ Los siguientes datos de girasol no sirven para los gráfico siguientes porque s�
 -   Cargue los datos de Fuel Consumption que usó en la práctica de Data Frames.
 
 ```{r}
-conn <- dbConnect(RSQLite::SQLite(), "datos/ejercicioDataFrames.db")
+conn <- dbConnect(RSQLite::SQLite(), "../datos/ejercicioDataFrames.db")
 dbListTables(conn)
 ```
 

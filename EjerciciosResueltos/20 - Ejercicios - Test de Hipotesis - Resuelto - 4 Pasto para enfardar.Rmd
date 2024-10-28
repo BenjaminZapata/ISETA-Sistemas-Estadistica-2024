@@ -1,0 +1,90 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+# Ejercicios
+
+## 4. Pasto para enfardar (Abigail Bustos y Anyelén Gómez)
+
+En un establecimiento lechero se proyecta utilizar el pasto presente en una pastura de 20 ha para hacer una reserva de fardos de heno con la cual alimentar a las vacas lecheras durante el invierno. Por ello interesa determinar si los fardos a producir alcanzarán para cubrir la necesidad de 90 tn de forraje para dicho período. Para concluir al respecto, se decide tomar una muestra de 25 marcos de 1 m² elegidos al azar dentro de la pastura. En cada marco, se cortará todo el forraje y se lo pesará luego de dejaro secar al aire del mismo modo que se hace para elaborar los fardos. Una vez realizadas las mediciones, se encuentra que el promedio de los pesos obtenidos es de 510 gramos/m² y el estimador del desvío estándar es de 100 g/m²
+
+a.    Identificar las unidades muestrales, la muestra y la población.
+
+> **Unidad Muestral:** Es un marco de 1 m² de pastura.
+**Muestra:** Es el conjunto de 25 marcos de 1 m² que se seleccionan al azar dentro de la pastura.
+**Población:** Es la totalidad de la pastura de 20 ha.
+
+b.    Formular hipótesis apropiadas para la evaluación propuesta.
+
+> Comentario de Rafa: las hipóteis las plantearía al revés, dado que lo que me interesa probar es que me alcanza el pasto, entonces eso pongo en la hipótesis alternativa. Para probar estas hipótesis en el test deberían poner lower.tail = FALSE. 
+
+> **Hipótesis Nula (H0):** El promedio de forraje es suficiente para cubrir las necesidades, es decir, el peso promedio de forraje por m² es igual o mayor a 510 g/m².
+**Hipótesis Alternativa (H1):** El promedio de forraje es insuficiente, es decir, el peso promedio de forraje por m² es menor a 510 g/m².
+
+$$
+    H_{0}: \mu_0 \geq 450 g/m^2 \\
+    H_{1}: \mu_0 < 450 g/m^2
+$$
+
+> El valor de **450 g/m2** (4500 kg/ha) se obtiene al convertir las **90 toneladas de forraje necesarias** en la cantidad equivalente por metro cuadrado de la pastura total (que es de 20 hectáreas= 200.000 m2).
+90 toneladas = 90.000 kg (1 tonelada = 1.000kg)
+20 hectareas = 200.000 m2 (1 hectarea = 10.000m2)
+
+c.    Dando por cierto que el peso del forraje en un marco de 1 m² a elegir al azar en la pastura de 20 ha es una variable aleatoria con distribución Normal, calcular el valor-p y concluir con un nivel de significación ⍺ = 0,01.
+
+```{r}
+# Datos
+n <- 25 # tamaño de la muestra
+x_barra <- 510  # promedio de peso de forraje en g/m²
+mu <- 450 #media bajo H0
+s <- 100  # desviación estándar en g/m²
+alpha <-0.01
+
+# Calcular el valor t
+t_value <- (x_barra - mu) / (s / sqrt(n))
+
+# Calcular el valor-p para una prueba t unilateral
+p_value <- pt(t_value, df = 25, lower.tail = TRUE)
+
+# Mostrar resultados
+cat("Valor t:", t_value, "\n")
+cat("Valor p:", p_value, "\n")
+
+# Conclusión
+if (p_value < alpha) {
+   cat("Rechazamos H0: No es suficiente el forraje.\n")
+    } else {
+      cat("No rechazamos H0: El forraje es suficiente.\n")
+  }
+```
+
+> 
+
+d.    Explicar la conclusión en términos de este problema.
+
+> Si el **valor-p** es **menor que 0,01**, rechaza la hipótesis nula. Esto significa que el promedio de forraje es significativamente menor y los fardos podrían no ser suficientes.
+
+> Si el **valor-p** es **mayor o igual a 0,01**, no rechaza la hipótesis nula. Esto indica que no hay suficiente evidencia para decir que el promedio es menor.
+
+e.    Explicar el tipo de error que se puede haber cometido en este análisis y cuáles serían sus implicancias.
+
+> Error Tipo I. Decidir que el promedio de forraje es insuficiente cuando en realidad es suficiente.
+**Implicación:** Podrías hacer un esfuerzo innecesario para conseguir más forraje, aunque realmente no lo necesites.
+
+> Error Tipo II. Decidir que el promedio de forraje es suficiente cuando en realidad es insuficiente.
+**Implicación:** Podrías no conseguir suficiente forraje, lo que podría dejar a las vacas sin suficiente alimento durante el invierno.
+
+

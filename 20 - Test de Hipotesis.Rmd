@@ -343,3 +343,16 @@ ggplot(data.frame(x = rango), aes(x = rango)) +
   geom_label(aes(x = tTestDiferencia$statistic, y = 0.1, label = tTestDiferencia$p.value))  +
   ylab("Densidad") + ggtitle("Distribución T de Student") + xlab("Diferencia de tiempo Normalizado")
 ```
+
+## ggttest
+
+```{r}
+library(gginference)
+ggttest(tTestPersona)
+```
+
+
+```{r}
+ggttest(tTestDiferencia)
+```
+

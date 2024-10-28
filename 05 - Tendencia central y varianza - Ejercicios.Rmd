@@ -1,0 +1,181 @@
+---
+title: "05 - Ejercicios - Tendencia central y varianza"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+# Estudiante: Benjamin Zapata
+
+Para realizar estos ejercicios use como referencia el documento "05 - Tendencia central y varianza.Rmd".
+
+Resuelva estos ejercicios en este documento insertando los chuncks necesarios (cntrl + alt + i), luego de cada consigna. Agregue al nombre del archivo el suyo al final (05 - Ejercicios - Tendencia central y varianza - SuNombre Apellido.Rmd), y me lo envía por email.
+
+Cargue las librerías necesaria cuando las necesite, no lo haga al inicio de la actividad. Esto no es el modo habitual de trabajo, pero se pretende aquí que usted descubra cuándo necesita las librerías extra.
+
+## Experimento
+
+Existen experimentos manipulativos o mensurativos.
+
+Los manipulativos son aquellos en los que manipulamos algo y medimos variables sobre lo manipulado. Por ejemplo, regamos plantas de tomate con dos cantidades diferentes de agua y cierto tiempo depués medimos altura, peso, cantidad de hojas, cantidad de flores, cantidad de frutos, peso de los frutos, etc. de las plantasde tomate en ambos tratamientos. 
+
+Los experimentos mensurativos en cambio, consisten en observar y medir algo "como está", y buscamos en la realidad un experimento que se haya hecho espontáneamente. Por ejemplo, encuestamos personas que hayan comprado en dos supermercados diferentes y les preguntamos qué compraron, cuánto compraron, qué faltó en el supermercado, qué decidieron no comprar, etc.
+
+En esta oportunidad usted debe realizar un experimento de cualquiera de los dos tipos y medir al menos 2 variables contínuas y dos discretas. Registre la información, organícela y luego cárguela para ser usada en R.
+
+En clases es conveniente que todos tengan la misma información a analizar, por esa razón en esta oportunidad le recomiendo que diseñen la actividad en grupos o inclusive todo el curso completo. Es importante para esta actividad involucrarse activamente en el diseño del experimento, la toma de datos y la digitalización de los mismos. Por esta última razón es preferible trabajar en grupos chicos si el trabajo entre todos le impide involucrarse activamente (trabajar de a muchos es difícil).
+
+La intensión no es lograr un experimento perfecto, trate de hacerlo lo mejor posible, pero es la primera vez y por lo tanto imposible que salga todo bien. Que las dificultades no sean un impedimento, avance aunque haya problemas y registre todo lo que le resulte importante, incluso los intentos fallidos.
+
+```{r}
+library(tidyverse) 
+library(tibble) # Libreria que incluye el tipo de dato tibble
+library(ggplot2) # Libreria para generar gráficos
+```
+
+
+## Cargar la información
+```{r}
+# Data frame con los datos corregidos
+dataset <- data.frame(
+  monto = c(1550, 1550, 1500, 11200, 780, 300, 2250, 980, 1900, 400, 1670, 600, 600, 
+            5000, 4000, 2160, 2050, 150, 2400, 510, 2400, 520, 410, 9200, 1550, 5260, 
+            1000, 1100, 2500, 2300, 2000, 4190, 150, 800, 650, 710, 1300, 3200, 800, 
+            600, 710, 1300, 3200, 400, 150, 1800, 1000, 150, 4100, 5850, 600, 460, 
+            700, 600, 700, 4900, 1500, 200, 2300, 2000, 7700, 1000, 4100, 600, 1100, 
+            800, 660, 3800, 4000, 18440, 1660, 2540, 2400, 620, 2980, 520, 2260, 460, 
+            240, 1500, 750, 375, 450, 11350, 11100, 800, 7800, 4100, 750, 650, 1440, 450, 11350, 11100, 800, 7800, 4100, 750, 650, 1440),
+  modo_pago = c('DNI', 'Efectivo', 'Efectivo', 'Posnet', 'Posnet', 'Efectivo', 'Efectivo', 
+                'Efectivo', 'Efectivo', 'Efectivo', 'Efectivo', 'Efectivo', 'Efectivo', 
+                'DNI', 'Efectivo', 'DNI', 'Efectivo', 'Efectivo', 'DNI', 'Efectivo', 
+                'Efectivo', 'Efectivo', 'Efectivo', 'Posnet', 'Efectivo', 'DNI', 
+                'Posnet', 'Efectivo', 'Efectivo', 'Posnet', 'DNI', 'Posnet', 'Posnet', 
+                'Efectivo', 'DNI', 'Efectivo', 'Posnet', 'Posnet', 'Efectivo', 'Efectivo', 
+                'Efectivo', 'Efectivo', 'Posnet', 'Efectivo', 'Efectivo', 'DNI', 
+                'Efectivo', 'Efectivo', 'DNI', 'Efectivo', 'Posnet', 'DNI', 'DNI', 
+                'Efectivo', 'Efectivo', 'Posnet', 'Efectivo', 'Efectivo', 'Efectivo', 
+                'Efectivo', 'Posnet', 'Transferencia', 'Transferencia', 'Efectivo', 
+                'Efectivo', 'Efectivo', 'DNI', 'Posnet', 'DNI', 'Posnet', 'DNI', 
+                'Efectivo', 'Efectivo', 'Transferencia', 'Efectivo', 'Efectivo', 
+                'Efectivo', 'Efectivo', 'DNI', 'Efectivo', 'Efectivo', 'Transferencia', 
+                'Efectivo', 'Transferencia', 'Posnet', 'Efectivo', 'Posnet', 
+                'Efectivo', 'Efectivo', 'Posnet', 'DNI','Efectivo', 'Transferencia', 'Posnet', 'Efectivo', 'Posnet', 'Efectivo', 'Efectivo', 'Posnet', 'DNI'),
+  numero_venta = 1:100
+)
+
+dataset
+```
+
+-   Describa el experimento y las variables medidas. Describa cómo midió todo lo que midió. Describa cómo eligió lo que decidió medir. 
+El experimento es mensurativo, donde se recolectaron datos de ventas de una librería. (Solo las primeras 100 ventas de un día hábil) Para analizar los diferentes métodos de pago en el comportamiento de compra de los clientes. Los datos de cada venta se registraron en el sistema del local, incluyendo el monto de la venta, el método de pago, y el número de venta.
+
+-   Cree un tibble con la información recopilada.
+```{r}
+dataset_tibble <- as_tibble(dataset)
+
+print(dataset_tibble)
+```
+
+# Descripción de las muestras
+
+Todos los índices siguientes deben calcularse sobre cada variable cuantitativa (contínua o discreta) del tibble creado.
+
+## Medidas de tendencia Central
+
+-   Mediana
+-   Moda
+-   Media
+
+## Medidas de variación
+
+-   Mínimo
+-   Máximo
+-   Cuantiles
+-   Varianza
+-   Desvío Estándar
+-   Coeficiente de Variación
+-   Error Estándar
+-   Asimetría
+-   Kurtosis
+-   Intervalo de confianza
+
+## Toda la información en un tibble
+
+-   Todos los índices en un solo tibble. Esto permite exportar la información ordenada.
+
+## Gráficos
+
+-   Histogramas
+-   Densidad
+-   Probabilidad acumulada
+-   Box Plot y violín
+
+```{r}
+paste("Montos de ventas")
+
+# Esto medirá desde la venta mas grande a la mas chica
+summary(dataset$monto)
+
+paste("Cantidad de ventras por medio de pago")
+
+# Contamos cuantas ventas se realizaron con cada modo de pago
+table(dataset$modo_pago)
+
+# Monto total de ventas para cada modo de pago
+aggregate(monto ~ modo_pago, data = dataset, sum)
+```
+
+```{r}
+# Histograma que visualiza la distribución de los modos de ventas
+ggplot(dataset, aes(x = monto)) + 
+  geom_histogram(binwidth = 10, fill = "blue", color = "black") +
+  labs(title = "Distribución de Montos de Ventas", x = "Monto", y = "Frecuencia")
+
+# Grafico de barras para analizar la frecuencia de cada método de pago
+ggplot(dataset, aes(x = modo_pago)) + 
+  geom_bar(fill = "blue", color = "black") +
+  labs(title = "Frecuencia de Modos de Pago", x = "Modo de Pago", y = "Frecuencia")
+
+# Boxplots y violín para comparar la distribución de los montos de ventas entre los diferentes modos de pago.
+
+# Boxplot
+ggplot(dataset, aes(x = modo_pago, y = monto)) + 
+  geom_boxplot() +
+  labs(title = "Distribución de Montos de Ventas por Modo de Pago", x = "Modo de Pago", y = "Monto")
+
+
+# Violín
+ggplot(dataset_tibble, aes(x = modo_pago, y = monto, fill = modo_pago)) +
+  geom_violin(trim = FALSE) +
+  labs(title = "Gráfico de Violín de Monto por Modo de Pago",
+       x = "Modo de Pago",
+       y = "Monto") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3")
+
+# Gráfico de Probabilidad Acumulada
+ggplot(dataset_tibble, aes(x = monto)) +
+  stat_ecdf(geom = "step") +
+  labs(title = "Gráfico de Probabilidad Acumulada de Monto",
+       x = "Monto",
+       y = "Probabilidad Acumulada") +
+  theme_minimal()
+
+```
+
+
+# Sugerencias
+
+En el siguiente sitio hay varios test de reflejos, memoria etc. que podrían realizar varias veces cada uno y recopilar datos de esta manera. Obviamente debe haber infinidad de este tipo de sitios, puede elejir el que le resulte más adecuado.
+https://www.arealme.com/apm-actions-per-minute-test/es/
+
+En realidad el sitio anterior tiene muchos otros tipos de tests que podría usar.
+https://www.arealme.com/es
+
+Puede recopilar una serie de objetos similares (por ejemplo plantas), y medirle varias cosas a cada una (como altura, peso, cantidad de hojas, cantidad de flores).
+
+Armar una encuesta por teléfono que tenga 4 preguntas, 2 para responder con números reales, y 2 con números enteros. Ejemplo, ¿Cuántas veces por día se sienta a comer?, ¿Cuántos días por semana come usted carne?, Estime cuánta agua consume por día (en litros), ¿Cuánto tiempo promedio dedica cada vez que se sienta a comer? (en minutos), etc. Una encuesta así puede armarse con los formularios de google. Aquí un ejemplo: <https://docs.google.com/forms/d/e/1FAIpQLSee2VpYipwupnrGSA1Iz3m7_wNtoq_UHquwPa-ApN3WxVcefA/viewform?usp=sf_link>
+
+Podría pararse en una esquina transitada de 9 de Julio y contar cuántas personas viajan en cada auto que pase durante un rato, cuánto tiempo transcurre entre la pasada de un auto y el siguiente, cantidad de autos que pasan en un período de tiempo fijo, generar categorías de vehículos (bicicleta, moto, auto, camioneta, etc.) y contar cuántos pasan de cada uno en un período de tiempo fijo, si hace marcas en el asfalto puede medir tiempos en recorrer cierta distancia y así calcular la velocidad, etc. Este experimento puede repetirse en diferentes momentos del día.
+
+Los ejemplos anteriores son para inducir su imaginación, hay infinidad de cosas para medir. Sólo piense en algo que le genere curiosidad y luego pregúntese qué y cómo puede medirlo. Inténte algo que le divierta aunque no salga como esperaba.

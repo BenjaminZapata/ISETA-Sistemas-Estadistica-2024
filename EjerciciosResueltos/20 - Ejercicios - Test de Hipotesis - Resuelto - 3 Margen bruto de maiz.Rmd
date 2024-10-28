@@ -1,0 +1,75 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+# Ejercicios
+
+## 3. Margen bruto de maíz (Abigail Bustos y Anyelén Gómez)
+
+Una empresa productora de semillas ofrece un nuevo híbrido de maíz que ha sido puesto a prueba en 12 lotes tomados al azar dentro del partido de Pergamino. En Pergamino el costo de producción de una hectárea de maiz hibrido es de US\$ 325 y el ingreso por cada tonelada vendida es US\$ 50. Los rendimientos obtenidos en cada lote fueron los siguientes (t/ha): 7.2 10.0 8.5 8.4 8.0 7.5 9.0 9.0 8.0 7.0 6.1 8.0
+
+a.    Identificar la poblacion, la muestra y las variables aleatorias consideradas.
+
+> **Población**: Todos los lotes de maíz cultivados en el partido de Pergamino donde se puede utilizar este híbrido de maíz. Representa el conjunto de todas las hectáreas de tierra que podrían sembrarse con este nuevo híbrido de maíz en Pergamino. 
+**Muestra**: Los 12 lotes de maíz seleccionados aleatoriamente en Pergamino en los cuales se probó el rendimiento del nuevo híbrido.
+**Variable**: **Rendimiento (t/ha)**: Es una variable cuantitativa continua que representa el rendimiento de maíz en toneladas por hectárea. Para cada lote, se mide el rendimiento obtenido.
+**Margen bruto (USD/ha)**: Es una variable derivada, calculada como la diferencia entre el ingreso por hectárea (basado en el rendimiento en t/ha) y el costo fijo por hectárea ($325 USD/ha).
+        
+b.    Construir un diagrama de cajas y bigotes para los datos de rendimiento de los lotes.
+
+```{r}
+# Datos de rendimientos en toneladas por hectárea
+rendimientos <- c(7.2, 10.0, 8.5, 8.4, 8.0, 7.5, 9.0, 9.0, 8.0, 7.0, 6.1, 8.0)
+
+# Crear diagrama de cajas y bigotes
+boxplot(rendimientos, horizontal = TRUE, main = "Diagrama de Cajas y Bigotes - Rendimientos", xlab = "Rendimiento (t/ha)", col = "lightblue", notch = TRUE)
+```
+
+c.    Poner a prueba la hipótesis nula que dice que el margen bruto (la diferencia entre el ingreso y el costo) correspondiente a la media poblacional de los rendimientos que este nuevo hibrido produciría en los lotes del partido de Pergamino no supera los USS 50 por hectárea (Mostrar el derramollo del análisis).
+
+> **Hipótesis nula (H₀)**: El margen bruto promedio para el nuevo híbrido es menor o igual a los US\$50 por hectárea.
+**Hipótesis alternativa (H₁)**: El margen bruto promedio es mayor a US\$50 por hectárea.
+Analisis matematicamente sería:
+
+$$
+    H_{0}: \mu_0 \leq 50 \\
+    H_{1}: \mu_0 > 50
+$$
+
+```{r}
+# Parámetros
+costo_produccion <- 325
+precio_tonelada <- 50
+margen_esperado <- 50
+
+# Rendimiento mínimo necesario para obtener el margen de 50 USD/ha
+rendimiento_umbral <- (margen_esperado + costo_produccion) / precio_tonelada
+
+# Prueba t de una muestra (hipótesis: media de rendimientos mayor a 7.5 t/ha)
+t_test <- t.test(rendimientos, mu = rendimiento_umbral, alternative = "greater")
+
+# Mostrar resultados
+t_test
+```
+
+d.    ¿Qué supuesto se dio por cierto para el análisis realizado en c?
+
+> 
+
+e.    Sobre la base del resultado obtenido, discutir la conveniencia de adoptar este nuevo hibrido en el partido de Pergamino.
+
+> 
+

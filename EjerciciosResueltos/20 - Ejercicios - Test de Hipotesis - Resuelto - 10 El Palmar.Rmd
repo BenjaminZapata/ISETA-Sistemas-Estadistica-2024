@@ -1,0 +1,98 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+Alumno: Leiva Nazareno
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+## 10. El Palmar (Nazareno Leiva)
+
+La vegetación característica del Parque Nacional "El Palmar" es una sabana con palmeras altas dispersas en una matriz de vegetación herbácea y arbustiva baja. Esta sabana es progresivamente invadida por árboles de especies que antes estaban restringidas a los bosquecitos que rodean a los rios y arroyos. Un estudiante de la Escuela para Graduados Alberto Soriano de la Facultad de Agronomía proyecta un experimento para determinar si el crecimiento promedio de las plántulas de Allophylus edulis (chal-chal), una de estas especies de arboles, difiere entre plántulas que están ubicadas bajo la copa de alguna palmera y plántulas que están ubicadas lejos de cualquier palmera. Para ello, seleccionará al azar 20 plántulas de Allophylus edulis establecidas bajo la copa de alguna palmera y 20 establecidas a más de 5 m de la palmera más cercana. Luego registrará el crecimiento de cada plántula durante un año, medido como la suma del crecimiento de todas sus ramas [cm].
+
+a.  Identificar las poblaciones, las muestras, las unidades muestrales y las variables aleatorias involucradas en esta investigación.
+b.  Explicar qué son los valores de crecimiento promedio que se intenta comparar.
+c.  Proponer dos causas posibles de la varianza de las variables aleatorias a registrar.
+
+Luego de realizar el experimento propuesto, el estudiante registra los datos que figuran en siguiente la tabla:
+
+Crecimiento total por plántula [cm]
+
+Bajo copa de palmera: 15.1-16.0-17.0-17.6-16.3-14.4-14.6-16.4-17.5-19.6-15.4-18.0-14.2-15.8-15.0-17.7-19.1-15.7-18.4-18.3
+
+Lejos de palmera: 18.2-19.5-21.1-16.1-16.0-16.4-18.6-16.9-16.6-15.5-18.5-13.2-18.3-18.1-20.3-14.8-20.5-14.8-15.9-16.9
+
+d.  A partir de los datos registrados, producir estimaciones puntales e intervalos de 95% de confianza para los valores de las medias poblacionales de los crecinmientos de las plántulas de Allophylus edulis ubicadas debajo de la copa de una palmera y de las ubicadas a más de 5 m de cualquier palmera. Presentarlas estimaciones en un gráfico de barras.
+e.  Formular y poner a prueba hipótesis apropiadas para realizar la evaluación propuesta. ćQué supuestos involucra la inferencia realizada en e?
+f.  Interpretar los resultados de la inferencia en términos del problema particular.
+g.  Explicar qué error se puede haber cometido. ¿Qué se hubiera podido hacer para disminuir la probabilidad de este tipo de error?
+------------------------------------------------------------------------------------------------------------------------------
+respuestas:
+
+
+d.  A partir de los datos registrados, producir estimaciones puntales e intervalos de 95% de confianza para los valores de las medias poblacionales de los crecinmientos de las plántulas de Allophylus edulis ubicadas debajo de la copa de una palmera y de las ubicadas a más de 5 m de cualquier palmera. Presentarlas estimaciones en un gráfico de barras.
+
+```{r}
+# Datos
+crecimiento_bajo_copa <- c(15.1, 16.0, 17.0, 17.6, 16.3, 14.4, 14.6, 16.4, 17.5, 19.6, 15.4, 18.0, 14.2, 15.8, 15.0, 17.7, 19.1, 15.7, 18.4, 18.3)
+crecimiento_lejos_copa <- c(18.2, 19.5, 21.1, 16.1, 16.0, 16.4, 18.6, 16.9, 16.6, 15.5, 18.5, 13.2, 18.3, 18.1, 20.3, 14.8, 20.5, 14.8, 15.9, 16.9)
+
+# Media y desviación estándar
+media_bajo_copa <- mean(crecimiento_bajo_copa)
+sd_bajo_copa <- sd(crecimiento_bajo_copa)
+media_lejos_copa <- mean(crecimiento_lejos_copa)
+sd_lejos_copa <- sd(crecimiento_lejos_copa)
+
+# Tamaño de muestra
+n_bajo_copa <- length(crecimiento_bajo_copa)
+n_lejos_copa <- length(crecimiento_lejos_copa)
+
+# Intervalos de confianza al 95%
+error_bajo_copa <- qt(0.975, df = n_bajo_copa - 1) * sd_bajo_copa / sqrt(n_bajo_copa)
+error_lejos_copa <- qt(0.975, df = n_lejos_copa - 1) * sd_lejos_copa / sqrt(n_lejos_copa)
+
+intervalo_bajo_copa <- c(media_bajo_copa - error_bajo_copa, media_bajo_copa + error_bajo_copa)
+intervalo_lejos_copa <- c(media_lejos_copa - error_lejos_copa, media_lejos_copa + error_lejos_copa)
+
+```
+
+# graficar resultado
+
+```{r}
+# Graficar
+library(ggplot2)
+
+datos <- data.frame(
+  Categoria = c("Bajo copa de palmera", "Lejos de palmera"),
+  Media = c(media_bajo_copa, media_lejos_copa),
+  IC_inf = c(intervalo_bajo_copa[1], intervalo_lejos_copa[1]),
+  IC_sup = c(intervalo_bajo_copa[2], intervalo_lejos_copa[2])
+)
+
+ggplot(datos, aes(x = Categoria, y = Media, fill = Categoria)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = 0.5) +
+  geom_errorbar(aes(ymin = IC_inf, ymax = IC_sup), width = 0.2, position = position_dodge(0.5)) +
+  labs(y = "Crecimiento Promedio [cm]", x = "Ubicación", title = "Crecimiento Promedio de Plántulas de Allophylus edulis") +
+  theme_minimal()
+
+```
+
+
+e.  Formular y poner a prueba hipótesis apropiadas para realizar la evaluación propuesta. ćQué supuestos involucra la inferencia realizada en e?
+
+```{r}
+# Prueba t para muestras independientes
+resultado_prueba <- t.test(crecimiento_bajo_copa, crecimiento_lejos_copa)
+resultado_prueba
+
+```
+

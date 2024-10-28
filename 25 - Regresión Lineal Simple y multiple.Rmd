@@ -1,0 +1,145 @@
+---
+title: "25 - Regresión Lineal Simple y múltiple"
+output: html_notebook
+---
+
+Aquí les dejo una referencia muy completa y clara sorbe este tema.
+
+Joaquín Amat Rodrigo (2016). "Correlación lineal y Regresión lineal simple"
+<https://cienciadedatos.net/documentos/24_correlacion_y_regresion_lineal>
+
+La primera parte es correlación (como ya se vió en 21 - Covarianza y Correlación.Rmd), acceda directamente a Regresión simple con este vínculo.
+<https://cienciadedatos.net/documentos/24_correlacion_y_regresion_lineal#Regresi%C3%B3n_lineal_simple>
+
+
+## Regresión simple.
+
+La regresión simple tiene una sola variable contínua explicatoria, pero puede tener más factores categóricos (ver más adelante).
+
+$$
+Y_{i} = \beta_0 + (\beta_1 *x_i)  + \epsilon_{i}
+$$
+Donde:
+
+-   Y es la variable dependiente (respuesta).
+-   𝜷0 es la ordenada al origen de la recta.
+-   𝜷1 es la pendiente de la recta.
+-   xi es la variable independiente del iésimo individuo.
+-   𝟄i es el residual del individuo iésimo respecto del valor predicho por el modelo. 
+Se asume que los residuales tienen distribución normal con media 0 y varianza sigma cuadrado:
+
+$$
+\epsilon_{ij} \sim N(0, \sigma^2)
+$$
+```{r}
+library(tidyverse)
+library(ggpmisc)
+```
+
+
+```{r}
+mtcars
+help(mtcars)
+```
+
+## Regresión simple
+
+```{r}
+regSimple <- lm(mpg ~ hp, data = mtcars)
+summary(regSimple)
+```
+
+```{r}
+# library(ggpmisc)
+ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "firebrick") +
+  stat_poly_eq(use_label(c("eq", "adj.R2", "R2", "R2.CI", "P", "n")))
+```
+
+## Regresión simple con un factor
+
+### Filtrando por una categoría
+
+Se puede filtrar los datos por una categoría y realizar una regresión simple como la anterior sobre los datos de esa categoría. Este procedimiento puede repetirse para cada una de las categoría de interés y obtener varias regresiones simples separadas.
+
+```{r}
+filtrado <- mtcars %>% filter(vs == 1)
+```
+
+```{r}
+regSimple2 <- lm(mpg ~ hp, data = filtrado)
+summary(regSimple2)
+```
+```{r}
+# library(ggpmisc)
+ggplot(filtrado, aes(x = hp, y = mpg, fill = factor(vs))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "firebrick") +
+  stat_poly_eq(use_label(c("eq", "R2"))) 
+```
+
+## Regresión múltiple
+
+El método anterior sirve, pero podemos extraer más información y realizar elanálisis anterior para todas las categorías en un solo paso. Lo que hacemos agregar un efecto de grupo (categórico) para cada nivel de un factor de interés. Esto hace varias regresiones juntas (una para cada nivel del factor de clasificación) y además puede probar las hipótesis similares a un ANOVA.
+
+El modelo sería el siguiente:
+
+$$
+Y_{ijk} = \beta_0 + \beta_1 X_i + \beta_j X_j + \beta_{1j} X_i X_j+ \epsilon_{ijk}
+$$
+
+```{r}
+regConFactor <- lm(mpg ~ hp * factor(vs), data = mtcars)
+summary(regConFactor)
+```
+
+```{r}
+# library(ggpmisc)
+ggplot(mtcars, aes(x = hp, y = mpg, fill = factor(vs))) +
+  geom_point(aes(fill = factor(vs))) +
+  geom_smooth(method = "lm", se = TRUE, color = "firebrick") +
+  stat_poly_eq(use_label(c("eq", "R2"))) 
+```
+
+### Probando con otro factor diferente
+
+```{r}
+regConFactor2 <- lm(mpg ~ hp * factor(cyl), data = mtcars)
+summary(regConFactor2)
+```
+
+
+```{r}
+# library(ggpmisc)
+ggplot(mtcars, aes(x = hp, y = mpg, fill = factor(cyl))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "firebrick") +
+  stat_poly_eq(use_label(c("eq", "R2"))) 
+```
+
+### Probando con dos factores
+
+```{r}
+regConFactor2 <- lm(mpg ~ hp * factor(vs) * factor(cyl), data = mtcars)
+summary(regConFactor2)
+```
+
+> Se puede ver que los p-values son demasiado altos, eso es porque en cada grupo hay pocos vehículos (n demasiado bajo).
+
+No encuentro forma de graficarlo con ggplot2.
+La única solución que sé que funcionaría es crear en el dataset una veriable nueva con la combinación de vs y cyl, para usarla en fill = dentro del aes() del ggplot().
+
+```{r}
+
+```
+
+## Regresión múltiple con dos variables contínuas explicadas (dependientes).
+
+Esto es más difícil de explicar, pero simplificando esto significa que podemos tratar de explicar una relación ente variables en vez de una variable sola.
+
+```{r}
+regMultiple <- glm(mpg * wt ~ hp * factor(cyl), data = mtcars)
+summary(regMultiple)
+```
+

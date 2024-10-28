@@ -1,0 +1,93 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+# Ejercicios
+
+## 5. Titulación de arsénico (Sofía Silvera)
+
+Para evaluar la exactitud de una nueva técnica de tulación para medir el contenido de arsénico en el agua una laboratorista prepara una solución acuosa que contiene exactamente 50.10^-3 mg de arsénico por litro. Luego, toma al azar 30 alicuctas de la solución y en cada una mide el contenido de arsénico con la técnica propuesta. Con los datos que genera, calcula la media muestral (52,18.10^-3 mg/1) y el estimador del desvío estándar (2,59.10^-3 mg/1).
+
+a.    Bajo los supuestos de distribución Normal y de independencia de las titulaciones ¿los datos permiten concluir, con a = 0.05, que la esperanza de las titulaciones difiere del contenido de arsénico de la solución?
+b.    Explicar qué es el nivel de significación a = 0.05 en términos de este problema.
+C.    Identificar la población de referencia y las variables aleatorias en este experimento. ¿Qué limitación importante tiene el procedimiento experimental seguido?
+d.    Construir e interpretar un intervalo de confianza 0.95 para la esperanza de las titulaciones.
+Ejercicio 5: Medición del contenido de arsénico en agua
+
+a. Formular hipótesis estadísticas
+
+$$
+H0: mu = 50e-3 mg/L 
+\\
+H1: mu ≠ 50e-3 mg/L 
+$$
+
+> La expresión anterior no está mal, pero es más claro así.
+
+$$
+H0: mu = 0.05 mg/L 
+\\
+H1: mu ≠ 0.05 mg/L 
+$$
+
+```{r}
+# b. Nivel de significación
+
+alfa2 <- 0.05 
+cat("Nivel de significación elegido: alfa =", alfa2, "\n")
+
+# c. Población de referencia y variables aleatorias
+
+cat("Población de referencia: Titulaciones realizadas con la nueva técnica en la solución de arsénico.\n")
+cat("Variables aleatorias: Contenido de arsénico medido en cada alícuota.\n")
+cat("Limitación del procedimiento: Puede haber sesgos en la técnica de titulación utilizada o errores de medición no considerados.\n")
+
+# Define parámetros dados 
+n2 <- 30  # Tamaño de la muestra
+media_muestral2 <- 52.18 * 10^-3  # Media muestral en mg/L
+mu_02 <- 50 * 10^-3  # Media bajo H0 en mg/L
+desviacion_estandar2 <- 2.59 * 10^-3  # Desviación estándar muestral en mg/L
+
+
+# Calcula el estadístico t para una prueba de dos colas
+t2 <- (media_muestral2 - mu_02) / (desviacion_estandar2 / sqrt(n2))
+
+#valor-p
+
+valor_p2 <- 2 * (1 - pt(abs(t2), df = n2 - 1))
+cat("Estadístico t:", t2, "\n")
+cat("Valor-p:", valor_p2, "\n")
+
+
+# d. Conclusión y Intervalo de confianza del 95%
+
+if (valor_p2 < alfa2) {
+  cat("Rechazo la hipótesis nula. La media de las titulaciones difiere del contenido verdadero de arsénico.\n")
+} else {
+  cat("No rechazo la hipótesis nula. No hay evidencia suficiente para concluir que la media de las titulaciones difiere del contenido verdadero de arsénico.\n")
+}
+
+t_critico2 <- qt(1 - alfa2/2, df = n2 - 1)
+error_estandar2 <- desviacion_estandar2 / sqrt(n2)
+limite_inferior2 <- media_muestral2 - t_critico2 * error_estandar2
+limite_superior2 <- media_muestral2 + t_critico2 * error_estandar2
+
+# Mostrar intervalo de confianza
+cat("Intervalo de confianza del 95% para la media de las titulaciones de arsénico: [", limite_inferior2, ",", limite_superior2, "]\n")
+
+
+```
+

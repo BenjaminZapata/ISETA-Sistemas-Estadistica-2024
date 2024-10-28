@@ -11,6 +11,7 @@ library(ggplot2)
 library(ggExtra)
 library(patchwork)
 library(GGally)
+library(plotrix)
 library(moments)
 # Cargamos las funciones que hemos ido creando:
 source("funciones/funcionesPersonales.R")

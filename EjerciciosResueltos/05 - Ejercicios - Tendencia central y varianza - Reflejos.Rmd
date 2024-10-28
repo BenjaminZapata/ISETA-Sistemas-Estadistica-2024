@@ -27,7 +27,7 @@ library(moments)
 
 ```{r}
 # Carga los datos desde un archivo CSV (asegúrate de que el archivo CSV está en el directorio de trabajo)
-data <- read.csv("datos/REFLEJOS.csv", header = TRUE, sep = ";")
+data <- read.csv("../datos/REFLEJOS.csv", header = TRUE, sep = ";")
 
 data <- data %>%
   mutate(NACHO = as.numeric(gsub(",", ".", NACHO)))%>%
@@ -80,7 +80,7 @@ head(data_tidy)
 Conservamos la información de ORDEN en el que se obtuvieron los datos para poder verificar si a lo largo del experimento hubo cambios en la reacción de cada sujeto (ser sección "Variaciones durante el experimento").
 
 ```{r}
-write_csv(data_tidy, "datos/reflejos_tidy.csv")
+write_csv(data_tidy, "../datos/reflejos_tidy.csv")
 ```
 
 ## Descripción general de la información
@@ -118,7 +118,9 @@ ggplot(data_tidy, aes(x = TIEMPO, fill = NOMBRE)) +
 Primero calculamos los índices más frecuentes usados en la descripción de los datos
 
 ```{r}
-source("funciones/funcionesPersonales.R")
+source("../funciones/ic95.R")
+source("../funciones/quantiles.R")
+source("../funciones/calcularMediana.R")
 ```
 
 

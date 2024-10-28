@@ -1,0 +1,73 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+# Ejercicios
+
+## 6. Virus en duraznos (Manuel Alvarez)
+
+En una investigación sobre la susceptibilidad de plántulas de durazno a dos cepas diferentes de un virus, se tomaron de un vivero 15 plántulas al azar, en cada plántula se seleccionaron 2 hojas y cada una fue inoculada con una de las dos cepas virales. Al cabo de una semana se midió en cada hoja el tamaño de la lesión producida por el virus (en mm²). Los datos obtenidos figuran en la tabla:
+
+Tamaño de lesión [mm²]
+
+|               |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+|:--------------|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+|Planta         |1   |2   |3   |4   |5   |6   |7   |8   |9   |10  |11  |12  |13  |14  |15  |
+|Cepa A         |31  |20  |18  |8   |25  |14  |17  |12  |21  |30  |17  | 9  |13  |10  |24  |
+|Cepa B         |18  |17  |14  |7   |21  |13  |22  |11  |22  |15  |11  |10  |13  | 5  |25  |
+
+a.    Estimar el promedio y la varianza de las diferencias entre los tamaños de las lesiones producidas por las dos cepas virales estudiadas.
+
+```{r}
+virusDur <- data.frame(Planta = c(1:15), "Cepa A" = c(31,20,18,8,25,14,17,12,21,30,17,9,13,10,24), "Cepa B" = c(18,17,14,7,21,13,22,11,22,15,11,10,13,5,25) ) 
+virusDur
+diffV <- virusDur$Cepa.A - virusDur$Cepa.B
+diffMean <- mean(diffV)
+diffVar <- var(diffV)
+```
+
+b.    Elegir un nivel de significación alfa y poner a prueba la siguiente hipótsis nula: "Las lesiones que producen las dos cepas virales tienen en promedio el mismo tamaño".
+
+$$
+H_{0}: \mu_1 = \mu_2\ \\
+H_{1}: \mu_1 ≠ \mu_2\
+$$
+
+
+```{r}
+test1 <- t.test(virusDur$Cepa.A,virusDur$Cepa.B, paired = TRUE, alternative = "two.sided", alpha = 0.05)
+print(test1)
+```
+
+### Gráfico:
+
+```{r}
+library(ggplot2)
+library(gginference)
+ggttest(test1)
+```
+
+> Se rechaza la hipotesis nula ya que el valor p es menor que el alfa = 0.05, esto indica que las dos cepas producen lesiones de tamaño significativamente diferente
+
+c.    Construir e interpretar un intervalo de confianza 1-alfa para la esperanza de la diferencia entre los tamaños de las lesiones producidas por las dos cepas virales.
+
+```{r}
+test1$conf.int
+```
+
+> 
+
+

@@ -1,0 +1,128 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+# Ejercicios
+
+## 11. Cobre y GDP de terneros (Javier Torres)
+
+Un técnico del INTA condujo un experimento para evaluar el efecto de la aplicación de cobre inyectable sobre la ganancia diaria de peso de terneros. Para ello, en un establecimiento de cría vacuna en el este del Chaco, tomó dos muestras aleatorias le terneros de un mes y medio de edad (pariciones tardías) y dos muestras aleatorias de terneros de dos meses y medio de edad (pariciones tempranas) hijos de vacas cebú inseminadas con semen de toros Polled Hereford. A fin de octubre pesó a todos los terneros seleccionados y luego sometió a los terneros y a las madres de una de las muestras de cada edad a un tratamiento de inyecciones de cobre y dejó a los restantes como controles sin tratar. Todos los terneros pastorearon con sus madres en campo natural hasta el destete cuatro meses después, momento en que se los volvió a pesar para calcular su ganancia de peso diario. A continuación se presenta un resumen de los datos generados en el experimento.
+
+Ganancia de peso de los terneros [g/día]
+
+|                                                       |     |        |       |
+|:------------------------------------------------------|:----|:------:|:-----:|
+|                                                       | n   | media  |   s   |
+| Pariciones tardias. Edad inicial: un mes y medio      |     |        |       |
+| \+ Tratados con Cu                                    | 16  | 807.03 | 74.37 |
+| \+ Control                                            | 14  | 684,38 | 81,56 |
+| Pariciones tempranas. Edad inicial: dos meses y medio |     |        |       |
+| \+ Tratados con Cu                                    | 16  | 768,00 | 63,44 |
+| \+ Control                                            | 18  | 736,72 | 78,55 |
+
+a.  Identificar las poblaciones, las unidades muestrales, las muestras y los tratamientos.
+
+    ```{r}
+    #la unidad muestrales son los terneros
+
+    #los tratamientos son: Tratados con cu y los de control
+
+    #Poblacion 1 (Paricion tardias)
+
+    "Tratados con CU"
+    tratados_con_CU <- 16 #muestras
+    media_CU <- 807.03 
+    sCU <- 74.37
+
+    "Control"
+    control <- 14 #muestra
+    media_sin_CU <- 684.38
+    s_sin_CU <- 81.56
+
+
+    "Poblacion 2 (Pariciones tempranas)"
+
+    "Tratados con CU"
+    tratados_con_CU2 <- 16 #muestra
+    media_CU2 <- 768.00
+    sCU2 <- 63.44
+
+    "Control"
+    control1 <- 18 # muestra
+    media_sin_CU2 <- 736.72
+    s_sin_CU2 <- 78.55
+    ```
+
+b.  Formular y poner a prueba hipótesis para establecer si la aplicación de cobre resulta en mayor ganancia de peso diario promedio de los terneros de pariciones tardias (alfa = 0,01).
+
+```{r}
+#hipotesis nula = tradados <= control
+#hipotesis alternativa = tratados > control
+
+alfa <- 0.01
+
+#calculo manualmente
+t_estadistico <- (media_CU - media_sin_CU) / sqrt((sCU^2 / tratados_con_CU) + (s_sin_CU^2 / control))
+
+t_estadistico
+
+#grados de libertad
+libertad <- ((sCU^2 / tratados_con_CU)+(s_sin_CU^2 / control))^2 / ((sCU^2 / tratados_con_CU)^2 / (tratados_con_CU -1) + (s_sin_CU^2 / control)^2 / control -1 )
+
+libertad
+
+t_critico <- pt(alfa, libertad)
+t_critico
+
+if (t_estadistico > t_critico) {
+  print("Rechazamos la hipótesis nula: El cobre tiene un efecto significativo.")
+} else {
+  print("No rechazamos la hipótesis nula: No hay evidencia suficiente para afirmar que el cobre tiene un efecto significativo.")
+}
+```
+
+C.  Formular y poner a prueba hipótesis para establecer si la aplicación de cobre resulta en mayor ganancia de peso diario promedio de los terneros de pariciones tempranas (alfa = 0,01).
+
+```{r}
+
+#hipotesis nula = tradados <= control
+#hipotesis alternativa = tratados > control
+
+t_estadistico1 <- (media_CU2- media_sin_CU2) / sqrt((sCU2^2 / tratados_con_CU2) + (s_sin_CU2^2 / control1))
+
+t_estadistico1
+
+libertad1 <- ((sCU2^2 / tratados_con_CU2)+(s_sin_CU2^2 / control1))^2 / ((sCU2^2 / tratados_con_CU2)^2 / (tratados_con_CU2 -1) + (s_sin_CU2^2 / control1)^2 / control1 -1 )
+
+libertad1
+
+t_critico1 <- pt(alfa, libertad1)
+t_critico1
+
+if (t_estadistico1 > t_critico1) {
+  print("Rechazamos la hipótesis nula: El cobre tiene un efecto significativo.")
+} else {
+  print("No rechazamos la hipótesis nula: No hay evidencia suficiente para afirmar que el cobre tiene un efecto significativo.")
+}
+```
+
+C.  ¿Qué error podría haber cometido en cada una de las dos pruebas realizadas? Describirlo en términos de este problema
+
+>
+
+D.  ¿Bajo qué supuestos son válidas las inferencia realizadas en b y c?
+
+>

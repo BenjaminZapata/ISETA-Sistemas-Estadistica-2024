@@ -1,0 +1,246 @@
+---
+title: "24 - ANOVA 2 factores y más"
+output: html_notebook
+---
+
+Una descripción completa que puede encontrar on line.
+
+-   Joaquín Amat Rodrigo (2016). ANOVA análisis de varianza para comparar múltiples medias.
+<https://cienciadedatos.net/documentos/19_anova>
+
+```{r}
+library(tidyverse)
+library(emmeans)
+library(car)
+```
+
+# ANOVA para dos factores
+
+Para realizar un ANOVA usamos la función aov(), que tiene como primer parámetro el modelo lineal que deseamos evaluar. El modelo lineal genérico es:
+
+$$
+Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha * \beta)_{ij} + \epsilon_{ijk}
+$$
+
+Donde:
+
+-   Y es la variable respuesta.
+-   𝝁 es la media de todos los datos juntos
+-   𝜶 es el efecto de grupo iésimo del factor 𝜶.
+-   𝜷 es el efecto de grupo jésimo del factor 𝜷.
+-   𝜶*𝜷es el efecto de interacción entre ambos factores.
+-   𝟄 es el residual del individuo késimo perteneciente al iésimo grupo del factor 𝜶 y el jésimo grupo del factor 𝜷. 
+Se asume que los residuales tienen distribución normal con media 0 y varianza sigma cuadrado:
+
+$$
+\epsilon_{ijk} \sim N(0, \sigma^2)
+$$
+
+La hipótesis a probar en un ANOVA de dos factores son varias. Se prueba:
+
+-   el modelo globalmente (es decir que ninguno de los grupos difiere del resto)
+-   cada factor por separado (los grupos dentro de un factor no difieren entre sí)
+-   cada una de las interacciones (es decir los grupos de un factor dentro de cada grupo del otro factor no difieren entre sí)
+
+## Un ejemplo: ToothGrowth
+
+### Primero "miramos los datos"
+
+#### Graficamos
+
+```{r}
+ggplot(ToothGrowth, aes(x = factor(dose), y = len, colour = supp)) + 
+    geom_boxplot() +
+    geom_jitter(width = .1) +
+  ggtitle("ToothGrowth")
+```
+
+```{r}
+ggplot(ToothGrowth, aes(y = len, x = factor(dose), color = supp)) +
+  geom_jitter(width = 0.1) +
+  stat_summary(fun = mean, geom = "point", shape = 3, size = 8, stroke = 2, show.legend = FALSE, alpha = 0.5) +
+  labs(title = "Medias de ToothGrowth por Dosis y Suplemento",
+       x = "Dosis",
+       y = "Longitud de los Dientes")
+```
+
+##### Calculamos los índices
+
+```{r}
+tgc <- ToothGrowth %>% group_by(supp, dose) %>% reframe(n = n(), media = mean(len), sd = sd(len), se = sd / sqrt(n), ci = 1.96*se) # aquí se usa una versión del intervalo de confianza ci que es muuuy simplificada (como se verá más adelante).
+# tgc$supp <- as.factor(tgc$supp)
+# tgc$dose <- as.factor(tgc$dose)
+tgc
+```
+
+```{r}
+ggplot(tgc, aes(x = dose, y = media, colour = supp)) + 
+    geom_errorbar(aes(ymin = media-ci, ymax = media+ci), width = .1) +
+    geom_line() +
+    geom_point() +
+  labs(title = "ANOVA ToothGrowth",
+       subtitle = "Crecimiento de dientes y vitamina C",
+       caption = "Las barras de error representan el Intervalo de Confianza al 95%")
+```
+
+## Hacemos el ANOVA
+
+### Con aov()
+
+```{r}
+anovaModel <- aov(len ~ supp + factor(dose) + supp:factor(dose), data = ToothGrowth)
+# anovaModel <- aov(len ~ supp * factor(dose), data = ToothGrowth)
+summary(anovaModel)
+
+emmeans(anovaModel, ~ supp * factor(dose))
+```
+
+```{r}
+anovaModel$coefficients
+```
+
+### Con lm()
+
+También puede realizarse con la función lm(), que se refiere a modelos lineales (Linear Model). En términos estrictos lm() y glm(), no realizan un ANOVA síno más bien una Regresión Lineal (que veremos en la próxima clase). Lo que ocurre es que cuando una Regrasión Lineal tiene variables explicatorias categóricas en vez de contínuas, el análisis de Regrasión Lineal es igual a una ANOVA.
+
+Aquí se puede ver en la última línea que el estadístico de prueba, los grados de libertad y el p-value coinciden con el resultado de aov(), ya que están calculados para el modelo completo. Además se puede ver que los coeficientes son los mismos. 
+
+El R² es el coeficiente de correlación (no el de Pearson, porque la variable explicatoria es categórica). lm() es más correcto usarlo para regresión lineal, es decir cuando la variable explicatoria es numérica (el tema se abordará más adelante).
+
+```{r}
+lmModel <- lm(len ~ supp * factor(dose), data = ToothGrowth)
+summary(lmModel)
+```
+
+### Con glm()
+
+La función glm() Se refiere a modelos lineales generalizados (Generalized Linear Models). Hace lo mismo (en este caso), pero tiene otras alternativas.
+
+-   lm() (Linear Model): Se utiliza para ajustar modelos de regresión lineal. La relación entre la variable dependiente Y y las variables independientes X se asume lineal, y la variable dependiente debe ser continua. Los errores deben ser normalmente distribuidos y tener varianza constante (homocedasticidad).
+
+-   glm() (Generalized Linear Model): Es una generalización de lm() y permite ajustar modelos lineales generalizados. Esto incluye modelos donde la variable dependiente puede seguir una distribución diferente a la Normal, como Binomial, Poisson, Gamma, entre otras. Se especifica una función de enlace para conectar la media de la variable dependiente con las variables predictoras. Por ejemplo, la regresión logística (para variables binarias) o la regresión de Poisson (para datos de conteo) se ajustan con glm().
+
+```{r}
+# Realizar un modelo GLM
+glmModel <- glm(len ~ supp * factor(dose), data = ToothGrowth)
+
+# Mostrar un resumen del modelo GLM
+summary(glmModel)
+
+# Calcular efectos por grupo
+efectosPorGrupo <- emmeans(glmModel, ~ supp * dose)
+
+# Mostrar los efectos por grupo
+summary(efectosPorGrupo, infer = c(TRUE, TRUE), level = 0.95)
+```
+
+## Verificación de supuestos
+
+### Normalidad
+
+```{r}
+shapiro.test(residuals(anovaModel))
+```
+
+### Homogeneidad de varianzas
+
+Se presentan 3 alternativas:
+
+```{r}
+bartlett.test(len ~ interaction(supp, dose), data = ToothGrowth)
+```
+
+```{r}
+fligner.test(len ~ interaction(supp, dose), data = ToothGrowth)
+```
+
+```{r}
+# library(car)
+leveneTest(len ~ supp * factor(dose), data = ToothGrowth)
+```
+
+La formula del modelo puede escribirse así también:
+
+```{r}
+# library(car)
+leveneTest(len ~ interaction(supp, dose), data = ToothGrowth)
+```
+
+### Autocorrelación de residuos
+
+Este test (Durbin-Watson) es importante cuando hay muchas variables explicatorias, verifica que nos estén correlacionadas entre sí. En este caso que hay sólo dos variables explicatorias es muy improbable que haya autocorrelación y por lo tanto generalmente no hace falta hacer la verificación. La incluyo aquí de todas maneras para mostrar cómo se raliza.
+
+```{r}
+# library(car)
+dwt(anovaModel)
+```
+
+
+### Supuestos Gráficamente
+
+```{r}
+par(mfrow = c(2,2))
+plot(anovaModel, pch = 16)
+```
+
+
+# Comparaciones múltiples (Post Hoc)
+
+El siguiente vínculo aborda este tema más extensamente.
+
+Joaquín Amat Rodrigo (2016). "Comparaciones múltiples: corrección de p-value y FDR".
+<https://rpubs.com/Joaquin_AR/236898>
+
+Las funciones LSD.test() y pairwise.t.test() puede usar los siguientes métodos: "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none" (T de Student)
+
+## Intervalos LSD de Fisher (Least Significance Difference)
+
+```{r}
+library(agricolae)
+lsdTest <- LSD.test(anovaModel, c("supp", "factor(dose)"), p.adj="bonferroni", alpha = 0.01, group=FALSE)
+lsdTest
+```
+
+## Tukey-Kramer (HSD). Honest Significant Difference. También conocido como corrección de Dunnet.
+
+```{r}
+tukeyTest <- TukeyHSD(anovaModel)
+tukeyTest
+```
+
+```{r}
+plot(tukeyTest)
+```
+
+
+## Aquí una solución de chatgpt.
+
+Me gusta porque es muy sintética y completa.
+
+```{r}
+library(lmtest)
+# Cargar el dataset y convertir 'dose' a factor
+data("ToothGrowth")
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+# ANOVA de dos factores con interacción
+modelo_toothgrowth <- aov(len ~ supp * dose, data = ToothGrowth)
+
+# Resumen del ANOVA
+summary(modelo_toothgrowth)
+
+# Verificación de normalidad
+qqnorm(resid(modelo_toothgrowth))
+qqline(resid(modelo_toothgrowth))
+shapiro.test(resid(modelo_toothgrowth))
+
+# Verificación de homogeneidad de varianzas
+plot(fitted(modelo_toothgrowth), resid(modelo_toothgrowth))
+leveneTest(len ~ supp * dose, data = ToothGrowth)
+bartlett.test(len ~ interaction(supp, dose), data = ToothGrowth)
+
+# Verificación de independencia (si es necesario)
+dwtest(modelo_toothgrowth)
+```
+
+

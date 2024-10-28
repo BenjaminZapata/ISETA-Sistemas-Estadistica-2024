@@ -8,6 +8,9 @@ output:
 ```{r}
 library(tidyverse)
 library(ggplot2)
+library(ggExtra)
+library(patchwork)
+library(GGally)
 ```
 
 # Covarianza
@@ -178,3 +181,42 @@ cor.test(diamonds$price, diamonds$carat, method = "spearman")
 cor.test(diamonds$price, diamonds$carat, method = "kendall")
 ```
 
+También se puede pedir una matriz de correlación a un dataset o tibble
+
+```{r}
+cor(diamonds[,c(1,5:10)])
+```
+
+Matrices gráficas de correlación
+
+## Matriz gráfica de correlación
+
+```{r fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
+iris %>% 
+   ggpairs(aes(color = Species, alpha = 0.5))
+ # ggpairs(columns = c(1,5:10), aes(color = cut, alpha = 0.5))
+ # ggpairs(columns = c(2:4), aes(color = cut, alpha = 0.5))
+```
+
+## Diagramas de dispersión, o gráficos de puntos. Con gráficos marginales
+
+```{r}
+p <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width, color = Species, size = Sepal.Length, alpha = 0.3)) +
+      geom_point() +
+      theme(legend.position="none")
+ 
+p1 <- ggMarginal(p, type="histogram")
+
+p2 <- ggMarginal(p, type="histogram", fill = "slateblue", xparams = list(  bins=10))
+ 
+p3 <- ggMarginal(p, type="density")
+ 
+p4 <- ggMarginal(p, type="boxplot")
+
+```
+
+```{r}
+library("cowplot")
+# Graficar en grilla
+plot_grid(p1,p2,p3,p4, labels = "AUTO")
+```

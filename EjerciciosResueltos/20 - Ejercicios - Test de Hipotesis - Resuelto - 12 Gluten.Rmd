@@ -1,0 +1,115 @@
+---
+title: "20 - Ejercicios - Pruebas de Hipótesis"
+output: 
+  html_notebook: 
+    toc: true
+---
+
+Los siguientes ejercicios fueron tomados de:
+
+-   Batista William (2020). Introducción a la inferencia estadística aplicada. 2da Ed. Editorial Facultad de Agronomía. 272 pgs. <https://www.agro.uba.ar/catalog/introducci-n-la-inferencia-estad-stica-aplicada-3ra-edici-n>
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(BSDA)
+```
+
+# Ejercicios
+
+## 12. Gluten (Juan Martín Arrizubieta)
+
+La aptitud de la harina de trigo para panificación depende principalmente de su contenido de un complejo proteico denominado gluten. Para evaluar la posible influencia del sistema de secado del grano sobre su contenido de gluten, se seleccionaron al azar dentro de la provincia de Buenos Aires 12 plantas de acopio que utilizan un sistema de secado prolongado a baja temperatura y 15 plantas de acopio que utilizan un sistema de secado rapido con alta temperatura y se determinó el contenido de gluten del trigo (g/100g) procesado en cada una. Los datos obtenidos son los siguientes:
+
+Contenido de gluten [g/100 g]
+
+Baja temperatura: 
+25.9-25.3-25.1-26.6-25.5-24.7-24.6-27.0-25.2-25.2-25.0-28.6
+
+Alta temperatura: 
+27.7-22.2-22.9-24.2-22.8-23.8-24.8-26.3-23.3-24.4-24.9-21.5-26.3-24.6-25.6
+
+a.    Identificar las unidades muəstrales, las muestras y las poblaciones.
+
+```{r}
+
+# Datos
+baja_temp <- c(25.9, 25.3, 25.1, 26.6, 25.5, 24.7, 24.6, 27.0, 25.2, 25.2, 25.0, 28.6, NA, NA, NA)
+alta_temp <- c(27.7, 22.2, 22.9, 24.2, 22.8, 23.8, 24.8, 26.3, 23.3, 24.4, 24.9, 21.5, 26.3, 24.6, 25.6)
+gluten <- tibble(baja_temp, alta_temp)
+# write_csv(gluten, "gluten.csv")
+```
+
+
+b.    Formular hipótesis apropiadas para evaluar si el contenido promedio de gluten es afectado por el sistema de secado. Dando por cierto que los datos obtenidos son realizaciones de variables aleatorias con distribución Normal con idéntica varianza.
+
+>Hipótesis nula (h0): El contenido promedio de gluten es el mismo para ambos sistemas de secado (u1 = u2).
+Hipótesis alternativa (h1): El contenido promedio de gluten es diferente para los dos sistemas de secado (u1 distinto u2).
+
+```{r}
+resultado_t_test <- t.test(baja_temp, alta_temp, var.equal = TRUE)
+# resultado_t_test <- t.test(baja_temp, alta_temp, var.equal = FALSE, alternative = "two.sided")
+print(resultado_t_test)
+```
+
+c.    Poner a prueba la hipótesis nula con un nivel de significación alfa = 0,05.
+
+```{r}
+0.024 < 0.05
+```
+
+> Queda en evidencia que el contenido promedio de gluten es significativamente diferente entre los dos sistemas de secado. En otras palabras, el sistema de secado sí parece tener un impacto en el contenido promedio de gluten en el trigo con lo cual se rechaza la hipotesis nula
+
+d.    Construir un intervalo de confianza 0,95 para la diferencia entre los promedios de contenido de gluten de trigo procesado con baja y con alta temperatura.
+
+```{r}
+resultado_t_test$conf.int
+```
+
+> Con un 95% de confianza, se puede decir que la diferencia en los promedios de contenido de gluten entre el trigo procesado a baja temperatura y el procesado a alta temperatura está entre 0.1957 y 2.5477 gramos por cada 100 gramos de trigo.
+
+e.    Explicar qué conclusión debería extraerse en relación con este fenómeno de interés y enunciar los supuestos bajo el cual dicha conclusión sería válida.
+
+> Se puede concluir que el sistema de secado del grano afecta significativamente el contenido promedio de gluten en el trigo. Específicamente, el trigo procesado con el sistema de secado a baja temperatura tiene, en promedio, un mayor contenido de gluten en comparación con el trigo procesado con el sistema de secado a alta temperatura.
+Esto es valido siempre y cuando se cumpla lo siguiente: 
+
+> Distribución Normal de los datos: Se asume que el contenido de gluten de ambas muestras (trigo secado a baja y alta temperatura) sigue una distribución normal. Este supuesto es crucial porque el test t utilizado para comparar las medias se basa en esta distribución. Si los datos no fueran normales, los resultados podrían no ser confiables.
+
+> Igualdad de varianzas: Se supone que las varianzas de las dos poblaciones son iguales. Esta condición es importante porque el test t utilizado es un test t para varianzas iguales. Si las varianzas fueran diferentes, el tipo de test aplicado podría no ser el adecuado, y esto afectaría la validez de la conclusión.
+
+> Independencia de las observaciones: Las muestras de cada grupo deben ser independientes. Esto significa que la medición del contenido de gluten en un trigo no debe influir en las demás mediciones. La independencia de las muestras es fundamental para que el test estadístico sea válido.
+Muestreo aleatorio: Las plantas de acopio de las que se obtuvieron las muestras fueron seleccionadas de manera aleatoria dentro de la provincia de Buenos Aires. La aleatoriedad en la selección asegura que los resultados obtenidos son representativos de la población general y no están sesgados.
+
+### Graficos:
+
+```{r}
+datos <- data.frame(
+  gluten = c(baja_temp, alta_temp),
+  sistema = factor(rep(c("Baja Temp", "Alta Temp"), c(length(baja_temp), length(alta_temp))))
+)
+```
+
+#### Boxplot
+
+```{r}
+ggplot(datos, aes(x = sistema, y = gluten, fill = sistema)) +
+  geom_boxplot() +
+  labs(title = "Contenido de gluten por sistema de secado",
+       x = "Sistema de secado",
+       y = "Contenido de gluten (g/100g)") +
+  theme_minimal()
+```
+
+#### Histograma
+
+```{r}
+ggplot(datos, aes(x = gluten, fill = sistema)) +
+  geom_histogram(position = "identity", alpha = 0.5, bins = 10) +
+  # facet_wrap(~sistema) +
+  labs(title = "Distribución del contenido de gluten",
+       x = "Contenido de gluten (g/100g)",
+       y = "Frecuencia") +
+  theme_minimal()
+```
+
+

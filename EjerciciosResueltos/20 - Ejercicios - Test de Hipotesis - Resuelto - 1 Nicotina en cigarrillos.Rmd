@@ -44,15 +44,15 @@ cigarrillos <- c(0.71, 0.75, 0.67, 0.68, 0.72, 0.58, 0.69, 0.71, 0.61, 0.67, 0.7
 > Primero hago el cálculo a mano. Estos datos además van a usarse para graficar. Suponemos, como indica el enunciado, que se trata de una distribución Normal. pnorm() calcula la probabilidad acumulada hasta el valor (estPrueba), consideramos la cola izquierda, por eso en este caso la usamos directamente. Si la hipótesis se planteara al revés deberíamos usar 1 - pnorm(), que calcula la cola derecha.
 
 ```{r}
-mu <- 0.7 # Valor de referencia
+mu <- 0.7 # Valor de refererncia
 media0 <- mean(cigarrillos) # media de la muestra
 n <- length(cigarrillos) # tamaño de la muestra
 sdCig <- sd(cigarrillos) # Desvío Estándar
 eE <- sdCig / sqrt(n) # Error Estándar
 
-estPrueba <- (media0 - mu) / (sdCig / sqrt(n))
+estPrueba <- (media0- mu) / (sdCig / sqrt(n))
 
-valor_p <- pnorm(estPrueba, mean = 0, sd = 1) # esto equivale a mirar la tabla Normalizada, por eso usamos media 0 y sd 1
+valor_p <-pnorm(estPrueba, mean = 0, sd = 1) # esto equivale a mirar la tabla Normalizada, por eso usamos media 0 y sd 1
 
 valor_p
 ```
@@ -114,167 +114,177 @@ d.  Concluir e interpretar aclarando el alcance de la inferencia realizada.
 
 > Además la probabilidad de que un cigarrillo tenga más de 0.7 mg de Nicotina es 0.414 (pNicotinaAlta), que es el área violeta mostrada en el gráfico superior izquierdo (g3), lo que indica que de cada 10 cigarrillos que alguien fuma, 4 están excedidos en Nicotina.
 
-## 2. Emisiones de CO por automóviles
+## 2. Emisiones de CO2 por automóviles
 
 Una compañía productora de automotores asegura que los autos del modelo que ofrece para ser equipado como taxi cumplen en promedio con la norma de la Agencia de Protección Ambiental de los Estados Unidos que establece que estos vehículos deben emitir menos de 2,5 gramos de monóxido de carbono por kilómetro. Para decidir si dar por cierta esta afirmación se decide obtener una muestra aleatoria de 25 de estos vehículos matriculados como taxis en la ciudad de San Francisco y medir el nivel de emisión de monóxido de carbono de cada uno. Con los datos obtenidos se calcula la media muestral (2,44 g/km) y el estimador insesgado de la varianza (0,021 g2/k㎡).
 
 a.  Formular hipótesis estadísticas apropiadas para tomar la decisión en cuestión. Enunciar el significado de cada hipótesis en términos del fenómeno de interés.
 
 $$
-H_{0}: \mu_0 \geq 2.5 \\
-H_{1}: \mu_0 < 2.5
+H_{0}: \mu_0 \geq 2.5 \space gCO/km \\
+H_{1}: \mu_0 < 2.5 \space gCO/km 
 $$
 
 b.  Seleccionar un nivel de significación apropiado. ¿Qué implica el valor elegido?
 
-  > Debido a que se trata de un asunto que impacta en el bienestar del medioambiente, y la salud de los ciudadanos, decidimos aceptar un minimo margen de error, solo el 0.01%. + cantidad poblacion
-  
+> alfa = 0.01
+
 c.  ¿En qué consiste el procedimiento para generar los datos necesarios para poner a prueba las hipótesis propuestas?
 
-```{r}
-# Parámetros del problema
-n <- 25  # Tamaño de la muestra
-media_muestral <- 2.44  # Media muestral
-varianza_muestral <- 0.021  # Varianza muestral
-
-# Generar los datos aleatorios
-set.seed(105)  # Establecer semilla para reproducibilidad
-desviacion_estandar <- sqrt(varianza_muestral)  # Obtener la desviación estándar
-datos <- rnorm(n, mean = media_muestral, sd = desviacion_estandar)
-# REVISAR ESTO - Aplicar Montecarlo
-# Mostrar los datos generados
-print(datos)
-
-# Realizar la prueba t para comparar la media con el valor de 2.5
-resultado_prueba <- t.test(datos, mu = 2.5, alternative = "less")
-
-# Mostrar el resultado de la prueba
-print(resultado_prueba)
-
-# Acceder al valor p y mostrarlo
-p_value <- resultado_prueba$p.value
-cat("El valor p es:", p_value, "\n")
-```
- 
- > En el caso de esta semilla, la hipotesis H0 es nula. Por ende la H1 es verdadera. <- Reever generación de muestras, probar montecarlo
+> Se selecciona una muestra aleatoria de 25 vehículos que ya están en uso como taxis en la ciudad de San Francisco y que sean el modelo ofrecido por la compañía en cuestión. Se mide el nivel de emisión de monóxido de carbono (CO) para cada uno de estos 25 vehículos.
 
 d.  Dando por cierto que los niveles de emisión registrados son realizaciones de variables aleatorias con distribución Normal, calcular el valor-p. ¿Qué probabilidad representa?
 
- > Representa una probabilidad del 0.2%. <- De la media
- 
+```{r}
+mu <- 2.5 # Valor de refererncia
+media0 <- 2.44 # media de la muestra
+n <- 25 # tamaño de la muestra
+sdCO <- sqrt(0.021) # Desvío Estándar
+eE <- sdCO / sqrt(n) # Error Estándar
+
+estPrueba <- (media0 - mu) / (sdCO / sqrt(n))
+
+pnorm(estPrueba, mean = 0, sd = 1) # esto equivale a mirar la tabla Normalizada, por eso usamos media 0 y sd 1
+pt(estPrueba, df = 24)
+```
+
+> El valor-p representa la probabilidad de observar un valor de t igual o más extremo que el calculado (-2.07), asumiendo que la hipótesis nula es cierta. En este caso, si la media real fuera 2.5 g/km, habría aproximadamente un 2.467% de probabilidad de obtener una media muestral tan baja como 2.44 g/km o menor debido al azar.
+
 e.  Concluir y explicar la conclusión en términos del fenómeno de interés.
 
- > Con esto valores, podemos rechazar la hipotesis H0, por lo que podemos decir que los vehiculos cumplen con el promedio de monoxido de carbono por kilometro de la norma de la Agencia de Protección Ambiental. 
- 
+> Dado que el valor-p (0.025) es menor que el nivel de significación seleccionado (α=0.05), rechazamos la hipótesis nula. Conclusión: Hay evidencia estadística suficiente para concluir que los vehículos del modelo estudiado emiten en promedio menos de 2.5 g/km de monóxido de carbono. Esto respalda la afirmación de la compañía automotriz.
+
 f.  ¿A qué población se extiende la inferencia realizada?
 
- > La población a la que se extiende la inferencia son todos los vehículos del modelo específico que la compañía produce y que están equipados como taxis. En este caso son 25 vehículos. <- Referir a la poblacion total. Punto a.
- 
-## 3. Margen bruto de maíz
+> La inferencia realizada se extiende a la población de vehículos del mismo modelo utilizados como taxis en la ciudad de San Francisco, siempre que estos vehículos estén representados adecuadamente por la muestra aleatoria seleccionada.
+
+## 3. Margen bruto de maíz (Abigail Bustos y Anyelén Gómez)
 
 Una empresa productora de semillas ofrece un nuevo híbrido de maíz que ha sido puesto a prueba en 12 lotes tomados al azar dentro del partido de Pergamino. En Pergamino el costo de producción de una hectárea de maiz hibrido es de US\$ 325 y el ingreso por cada tonelada vendida es US\$ 50. Los rendimientos obtenidos en cada lote fueron los siguientes (t/ha): 7.2 10.0 8.5 8.4 8.0 7.5 9.0 9.0 8.0 7.0 6.1 8.0
 
 a.    Identificar la poblacion, la muestra y las variables aleatorias consideradas.
 
- > Población: Todas las hectáreas cultivables con maíz híbrido en Pergamino.
-   Muestra: 12 lotes seleccionados al azar en Pergamino.
-   Variable aleatoria: Rendimiento de maíz híbrido en toneladas por hectárea (t/ha).
-
+> **Población**: Todos los lotes de maíz cultivados en el partido de Pergamino donde se puede utilizar este híbrido de maíz. Representa el conjunto de todas las hectáreas de tierra que podrían sembrarse con este nuevo híbrido de maíz en Pergamino. 
+**Muestra**: Los 12 lotes de maíz seleccionados aleatoriamente en Pergamino en los cuales se probó el rendimiento del nuevo híbrido.
+**Variable**: **Rendimiento (t/ha)**: Es una variable cuantitativa continua que representa el rendimiento de maíz en toneladas por hectárea. Para cada lote, se mide el rendimiento obtenido.
+**Margen bruto (USD/ha)**: Es una variable derivada, calculada como la diferencia entre el ingreso por hectárea (basado en el rendimiento en t/ha) y el costo fijo por hectárea ($325 USD/ha).
+        
 b.    Construir un diagrama de cajas y bigotes para los datos de rendimiento de los lotes.
 
 ```{r}
-# Datos de rendimiento de los 12 lotes (en toneladas por hectárea)
+# Datos de rendimientos en toneladas por hectárea
 rendimientos <- c(7.2, 10.0, 8.5, 8.4, 8.0, 7.5, 9.0, 9.0, 8.0, 7.0, 6.1, 8.0)
 
-# Crear el diagrama de cajas y bigotes (boxplot)
-boxplot(rendimientos, 
-        main = "Diagrama de Cajas y Bigotes - Rendimiento del Maíz Híbrido",#Titulo
-        ylab = "Rendimiento (t/ha)", #Eje y
-        col = "lightblue", 
-        border = "darkblue")
-
-# Agregar líneas para la media. El promedio
-abline(h = mean(rendimientos), col = "red", lty = 2)
-
+# Crear diagrama de cajas y bigotes
+boxplot(rendimientos, horizontal = TRUE, main = "Diagrama de Cajas y Bigotes - Rendimientos", xlab = "Rendimiento (t/ha)", col = "lightblue", notch = TRUE)
 ```
 
+c.    Poner a prueba la hipótesis nula que dice que el margen bruto (la diferencia entre el ingreso y el costo) correspondiente a la media poblacional de los rendimientos que este nuevo hibrido produciría en los lotes del partido de Pergamino no supera los USS 50 por hectárea (Mostrar el derramollo del análisis).
 
-c.    Poner a prueba la hipótesis nula que dice que el margen bruto (la diferencia entre el ingreso y el costo) correspondiente a la media poblacional de los rendimientos que este nuevo hibrido produciría en los lotes del partido de Pergamino no supera los USS 50 por hectarea (Mostrar el desamolio del análisis).
+> **Hipótesis nula (H₀)**: El margen bruto promedio para el nuevo híbrido es menor o igual a los US\$50 por hectárea.
+**Hipótesis alternativa (H₁)**: El margen bruto promedio es mayor a US\$50 por hectárea.
+Analisis matematicamente sería:
 
 $$
-H_{0}: \mu_0 \leq 50 \\
-H_{1}: \mu_0 > 50
+    H_{0}: \mu_0 \leq 50 \\
+    H_{1}: \mu_0 > 50
 $$
 
 ```{r}
-rendimientos <- c(7.2, 10.0, 8.5, 8.4, 8.0, 7.5, 9.0, 9.0, 8.0, 7.0, 6.1, 8.0)
+# Parámetros
+costo_produccion <- 325
+precio_tonelada <- 50
+margen_esperado <- 50
 
-# Parámetros económicos
-costo_produccion <- 325  # US$/ha
-ingreso_por_tonelada <- 50  # US$/tonelada
+# Rendimiento mínimo necesario para obtener el margen de 50 USD/ha
+rendimiento_umbral <- (margen_esperado + costo_produccion) / precio_tonelada
 
-# Calcular el margen bruto para cada lote. La ganancia menos el gasto
-margen_bruto <- (rendimientos * ingreso_por_tonelada) - costo_produccion
+# Prueba t de una muestra (hipótesis: media de rendimientos mayor a 7.5 t/ha)
+t_test <- t.test(rendimientos, mu = rendimiento_umbral, alternative = "greater")
 
-# Realizar la prueba t para comparar el margen bruto con 50
-resultado_prueba <- t.test(margen_bruto, mu = 50, alternative = "greater")
-
-# Mostrar los resultados de la prueba
-print(resultado_prueba)
-
-# Calcular la media de los márgenes brutos y mostrarla. promedio de ingreso bruto
-media_margen_bruto <- mean(margen_bruto)
-cat("Media del margen bruto:", media_margen_bruto, "US$\n")
-
-#Calcular el p value. 
-p_value <- resultado_prueba$p.value
-cat("El valor p es:", p_value, "\n")
+# Mostrar resultados
+t_test
 ```
 
 d.    ¿Qué supuesto se dio por cierto para el análisis realizado en c?
 
-> EL P es mayor que el nivel de significación, no hay suficiente evidencia para rechazar H0 y podemos concluir que el margen bruto medio podría ser mayor o igual a 50 US$. Hay un 95% de probabilidad de que gane 50 US$ o más y que sea rentable.
-
-< En este caso, no rechazamos la H0
+> 
 
 e.    Sobre la base del resultado obtenido, discutir la conveniencia de adoptar este nuevo hibrido en el partido de Pergamino.
 
- > Hay evidencia suficiente para decir que el margen bruto medio es meyor a 50 US$/hectárea. Por lo que el híbrido podría ser económicamente viable.
+> 
 
-## 4. Pasto para enfardar
+## 4. Pasto para enfardar (Abigail Bustos y Anyelén Gómez)
 
-En un establecimiento lechero se proyecta utilizar el pasto presente en una pastura de 20 ha para hacer una reserva de fardos de heno con la qual alimentar a las vacas lecheras durante el invierno. Por ello interesa determinar si los fardos a producir alcanzarán para cubrir la necesidad de 90 t de forraje para dicho período. Para concluir al respecto, se decide tomar una muestra de 25 marcos de 1 m² elegidos al azar dentro de la pastura. En cada marco, se cortará todo el forraje y se lo pesará luego de dejaro secar al aire del mismo modo que se hace para elaborar los fardos. Una vez realizadas las mediciones, se encuentra que el promedio de los pesos obtenidos es de 510 gramos/m² y el estimador del desvío estándar es de 100 g/m²
+En un establecimiento lechero se proyecta utilizar el pasto presente en una pastura de 20 ha para hacer una reserva de fardos de heno con la cual alimentar a las vacas lecheras durante el invierno. Por ello interesa determinar si los fardos a producir alcanzarán para cubrir la necesidad de 90 tn de forraje para dicho período. Para concluir al respecto, se decide tomar una muestra de 25 marcos de 1 m² elegidos al azar dentro de la pastura. En cada marco, se cortará todo el forraje y se lo pesará luego de dejaro secar al aire del mismo modo que se hace para elaborar los fardos. Una vez realizadas las mediciones, se encuentra que el promedio de los pesos obtenidos es de 510 gramos/m² y el estimador del desvío estándar es de 100 g/m²
 
 a.    Identificar las unidades muestrales, la muestra y la población.
 
-> Unidades Muestrales: Marcos de 1 m² dentro de la pastura.
-  Muestra: 25 marcos de 1 m² seleccionados al azar.
-  Población: Todos los marcos de 1 m² en la pastura de 20 hectáreas.
-
+> **Unidad Muestral:** Es un marco de 1 m² de pastura.
+**Muestra:** Es el conjunto de 25 marcos de 1 m² que se seleccionan al azar dentro de la pastura.
+**Población:** Es la totalidad de la pastura de 20 ha.
 
 b.    Formular hipótesis apropiadas para la evaluación propuesta.
 
+> Comentario de Rafa: las hipóteis las plantearía al revés, dado que lo que me interesa probar es que me alcanza el pasto, entonces eso pongo en la hipótesis alternativa. Para probar estas hipótesis en el test deberían poner lower.tail = FALSE. 
+
+> **Hipótesis Nula (H0):** El promedio de forraje es suficiente para cubrir las necesidades, es decir, el peso promedio de forraje por m² es igual o mayor a 510 g/m².
+**Hipótesis Alternativa (H1):** El promedio de forraje es insuficiente, es decir, el peso promedio de forraje por m² es menor a 510 g/m².
+
 $$
-H_{0}: \mu_0 \geq 450 m2\\
-H_{1}: \mu_0 < 450 m2
+    H_{0}: \mu_0 \geq 450 g/m^2 \\
+    H_{1}: \mu_0 < 450 g/m^2
 $$
+
+> El valor de **450 g/m2** (4500 kg/ha) se obtiene al convertir las **90 toneladas de forraje necesarias** en la cantidad equivalente por metro cuadrado de la pastura total (que es de 20 hectáreas= 200.000 m2).
+90 toneladas = 90.000 kg (1 tonelada = 1.000kg)
+20 hectareas = 200.000 m2 (1 hectarea = 10.000m2)
 
 c.    Dando por cierto que el peso del forraje en un marco de 1 m² a elegir al azar en la pastura de 20 ha es una variable aleatoria con distribución Normal, calcular el valor-p y concluir con un nivel de significación ⍺ = 0,01.
 
 ```{r}
+# Datos
+n <- 25 # tamaño de la muestra
+x_barra <- 510  # promedio de peso de forraje en g/m²
+mu <- 450 #media bajo H0
+s <- 100  # desviación estándar en g/m²
+alpha <-0.01
 
-p_value <- pt(3, df = 24, lower.tail = FALSE)
-print(p_value)
+# Calcular el valor t
+t_value <- (x_barra - mu) / (s / sqrt(n))
 
+# Calcular el valor-p para una prueba t unilateral
+p_value <- pt(t_value, df = 25, lower.tail = TRUE)
+
+# Mostrar resultados
+cat("Valor t:", t_value, "\n")
+cat("Valor p:", p_value, "\n")
+
+# Conclusión
+if (p_value < alpha) {
+   cat("Rechazamos H0: No es suficiente el forraje.\n")
+    } else {
+      cat("No rechazamos H0: El forraje es suficiente.\n")
+  }
 ```
+
+> 
 
 d.    Explicar la conclusión en términos de este problema.
 
->  El valor-p es menor que 0.01, lo que indica que hay evidencia suficiente para concluir que el peso promedio del forraje seco es significativamente menor a 450 gramos/m². Por lo tanto, la pastura no produce suficiente forraje seco para cubrir la necesidad de 90 toneladas, y los fardos de heno no alcanzarían para alimentar a las vacas durante el invierno.
+> Si el **valor-p** es **menor que 0,01**, rechaza la hipótesis nula. Esto significa que el promedio de forraje es significativamente menor y los fardos podrían no ser suficientes.
+
+> Si el **valor-p** es **mayor o igual a 0,01**, no rechaza la hipótesis nula. Esto indica que no hay suficiente evidencia para decir que el promedio es menor.
 
 e.    Explicar el tipo de error que se puede haber cometido en este análisis y cuáles serían sus implicancias.
 
-## 5. Titulación de arsénico
+> Error Tipo I. Decidir que el promedio de forraje es insuficiente cuando en realidad es suficiente.
+**Implicación:** Podrías hacer un esfuerzo innecesario para conseguir más forraje, aunque realmente no lo necesites.
+
+> Error Tipo II. Decidir que el promedio de forraje es suficiente cuando en realidad es insuficiente.
+**Implicación:** Podrías no conseguir suficiente forraje, lo que podría dejar a las vacas sin suficiente alimento durante el invierno.
+
+## 5. Titulación de arsénico 
 
 Para evaluar la exactitud de una nueva técnica de tulación para medir el contenido de arsénico en el agua una laboratorista prepara una solución acuosa que contiene exactamente 50.10^-3 mg de arsénico por litro. Luego, toma al azar 30 alicuctas de la solución y en cada una mide el contenido de arsénico con la técnica propuesta. Con los datos que genera, calcula la media muestral (52,18.10^-3 mg/1) y el estimador del desvío estándar (2,59.10^-3 mg/1).
 
@@ -282,8 +292,71 @@ a.    Bajo los supuestos de distribución Normal y de independencia de las titul
 b.    Explicar qué es el nivel de significación a = 0.05 en términos de este problema.
 C.    Identificar la población de referencia y las variables aleatorias en este experimento. ¿Qué limitación importante tiene el procedimiento experimental seguido?
 d.    Construir e interpretar un intervalo de confianza 0.95 para la esperanza de las titulaciones.
+Ejercicio 5: Medición del contenido de arsénico en agua
 
-## 6. Virus en duraznos
+a. Formular hipótesis estadísticas
+
+$$
+H0: mu = 50e-3 mg/L 
+\\
+H1: mu ≠ 50e-3 mg/L 
+$$
+
+$$
+H0: mu = 0.05 mg/L 
+\\
+H1: mu ≠ 0.05 mg/L 
+$$
+
+```{r}
+# b. Nivel de significación
+
+alfa2 <- 0.05 
+cat("Nivel de significación elegido: alfa =", alfa2, "\n")
+
+# c. Población de referencia y variables aleatorias
+
+cat("Población de referencia: Titulaciones realizadas con la nueva técnica en la solución de arsénico.\n")
+cat("Variables aleatorias: Contenido de arsénico medido en cada alícuota.\n")
+cat("Limitación del procedimiento: Puede haber sesgos en la técnica de titulación utilizada o errores de medición no considerados.\n")
+
+# Define parámetros dados 
+n2 <- 30  # Tamaño de la muestra
+media_muestral2 <- 52.18 * 10^-3  # Media muestral en mg/L
+mu_02 <- 50 * 10^-3  # Media bajo H0 en mg/L
+desviacion_estandar2 <- 2.59 * 10^-3  # Desviación estándar muestral en mg/L
+
+
+# Calcula el estadístico t para una prueba de dos colas
+t2 <- (media_muestral2 - mu_02) / (desviacion_estandar2 / sqrt(n2))
+
+#valor-p
+
+valor_p2 <- 2 * (1 - pt(abs(t2), df = n2 - 1))
+cat("Estadístico t:", t2, "\n")
+cat("Valor-p:", valor_p2, "\n")
+
+
+# d. Conclusión y Intervalo de confianza del 95%
+
+if (valor_p2 < alfa2) {
+  cat("Rechazo la hipótesis nula. La media de las titulaciones difiere del contenido verdadero de arsénico.\n")
+} else {
+  cat("No rechazo la hipótesis nula. No hay evidencia suficiente para concluir que la media de las titulaciones difiere del contenido verdadero de arsénico.\n")
+}
+
+t_critico2 <- qt(1 - alfa2/2, df = n2 - 1)
+error_estandar2 <- desviacion_estandar2 / sqrt(n2)
+limite_inferior2 <- media_muestral2 - t_critico2 * error_estandar2
+limite_superior2 <- media_muestral2 + t_critico2 * error_estandar2
+
+# Mostrar intervalo de confianza
+cat("Intervalo de confianza del 95% para la media de las titulaciones de arsénico: [", limite_inferior2, ",", limite_superior2, "]\n")
+
+
+```
+
+## 6. Virus en duraznos (Manuel Alvarez)
 
 En una investigación sobre la susceptibilidad de plántulas de durazno a dos cepas diferentes de un virus, se tomaron de un vivero 15 plántulas al azar, en cada plántula se seleccionaron 2 hojas y cada una fue inoculada con una de las dos cepas virales. Al cabo de una semana se midió en cada hoja el tamaño de la lesión producida por el virus (en mm²). Los datos obtenidos figuran en la tabla:
 
@@ -296,11 +369,46 @@ Tamaño de lesión [mm²]
 |Cepa B         |18  |17  |14  |7   |21  |13  |22  |11  |22  |15  |11  |10  |13  | 5  |25  |
 
 a.    Estimar el promedio y la varianza de las diferencias entre los tamaños de las lesiones producidas por las dos cepas virales estudiadas.
+
+```{r}
+virusDur <- data.frame(Planta = c(1:15), "Cepa A" = c(31,20,18,8,25,14,17,12,21,30,17,9,13,10,24), "Cepa B" = c(18,17,14,7,21,13,22,11,22,15,11,10,13,5,25) ) 
+virusDur
+diffV <- virusDur$Cepa.A - virusDur$Cepa.B
+diffMean <- mean(diffV)
+diffVar <- var(diffV)
+```
+
 b.    Elegir un nivel de significación alfa y poner a prueba la siguiente hipótsis nula: "Las lesiones que producen las dos cepas virales tienen en promedio el mismo tamaño".
+
+$$
+H_{0}: \mu_1 = \mu_2\ \\
+H_{1}: \mu_1 ≠ \mu_2\
+$$
+
+
+```{r}
+test1 <- t.test(virusDur$Cepa.A,virusDur$Cepa.B, paired = TRUE, alternative = "two.sided", alpha = 0.05)
+print(test1)
+```
+
+### Gráfico:
+
+```{r}
+library(ggplot2)
+library(gginference)
+ggttest(test1)
+```
+
+> Se rechaza la hipotesis nula ya que el valor p es menor que el alfa = 0.05, esto indica que las dos cepas producen lesiones de tamaño significativamente diferente
+
 c.    Construir e interpretar un intervalo de confianza 1-alfa para la esperanza de la diferencia entre los tamaños de las lesiones producidas por las dos cepas virales.
-d.    ċQué supuesto condiciona la validez de la inferencia realizada en b y c?
-e.    Explicar qué representa el valor de alfa elegido en términos del problema.
- 
+
+```{r}
+test1$conf.int
+```
+
+> 
+
 ## 7. Labranzas mecánicas vs. químicas
 
 Un consorcio de productores agrícolas(CREA) lleva adelante una comparación de los rendimientos de maiz obtenidos con dos métodos de cultivo diferentes, labranza mecánica y labranza química. Para ello, cada socio del CREA elige al azar un lote que ha sido cultivado como una unidad al menos en los últimos 5 años, lo divide en dos y cultiva maíz aplicando uno de los dos tipos de labranza en cada mitad. Al final de la campaña, los productores reúnen el siguiente conjunto de datos de los rendimientos obtenidos:
@@ -408,9 +516,9 @@ C.    Formular y poner a prueba hipótesis para establecer si la aplicación de 
 d.    ¿Qué error podría haber cometido en cada una de las dos pruebas realizadas? Describirlo en términos de este problema.
 e.    ¿Bajo qué supuestos son válidas las inferencia realizadas en b y c?
 
-## 12. Gluten
+## 12. Gluten (Juan Martín Arrizubieta)
 
-La apiitud de la harina de trigo para panificación depende principalmente de su contenido de un complejo proteico denominado gluten. Para evaluar la posible influencia del sistema de secado del grano sobre su contenido de gluten, se seleccionaron al azar dentro de la provincia de Buenos Aires 12 plantas de acopio que utilizan un sistema de secado prolongado a baja temperatura y 15 plantas de acopio que utilizan un sistema de secado rapido con alta temperatura y se determinó el contenido de gluten del trigo (g/100g) procesado en cada una. Los datos obtenidos son los siguientes:
+La aptitud de la harina de trigo para panificación depende principalmente de su contenido de un complejo proteico denominado gluten. Para evaluar la posible influencia del sistema de secado del grano sobre su contenido de gluten, se seleccionaron al azar dentro de la provincia de Buenos Aires 12 plantas de acopio que utilizan un sistema de secado prolongado a baja temperatura y 15 plantas de acopio que utilizan un sistema de secado rapido con alta temperatura y se determinó el contenido de gluten del trigo (g/100g) procesado en cada una. Los datos obtenidos son los siguientes:
 
 Contenido de gluten [g/100 g]
 
@@ -421,12 +529,86 @@ Alta temperatura:
 27.7-22.2-22.9-24.2-22.8-23.8-24.8-26.3-23.3-24.4-24.9-21.5-26.3-24.6-25.6
 
 a.    Identificar las unidades muəstrales, las muestras y las poblaciones.
-b.    Formular hipótesis apropiadas para evaluar si el contenido promedio de gluten es afectado por el sistema de secado.
 
-Dando por cierto que los datos obtenidos son realizaciones de variables aleatorias con distribución Normal con idéntica varianza.
+```{r}
+
+# Datos
+baja_temp <- c(25.9, 25.3, 25.1, 26.6, 25.5, 24.7, 24.6, 27.0, 25.2, 25.2, 25.0, 28.6, NA, NA, NA)
+alta_temp <- c(27.7, 22.2, 22.9, 24.2, 22.8, 23.8, 24.8, 26.3, 23.3, 24.4, 24.9, 21.5, 26.3, 24.6, 25.6)
+gluten <- tibble(baja_temp, alta_temp)
+# write_csv(gluten, "gluten.csv")
+```
+
+
+b.    Formular hipótesis apropiadas para evaluar si el contenido promedio de gluten es afectado por el sistema de secado. Dando por cierto que los datos obtenidos son realizaciones de variables aleatorias con distribución Normal con idéntica varianza.
+
+>Hipótesis nula (h0): El contenido promedio de gluten es el mismo para ambos sistemas de secado (u1 = u2).
+Hipótesis alternativa (h1): El contenido promedio de gluten es diferente para los dos sistemas de secado (u1 distinto u2).
+
+```{r}
+resultado_t_test <- t.test(baja_temp, alta_temp, var.equal = TRUE)
+# resultado_t_test <- t.test(baja_temp, alta_temp, var.equal = FALSE, alternative = "two.sided")
+print(resultado_t_test)
+```
 
 c.    Poner a prueba la hipótesis nula con un nivel de significación alfa = 0,05.
+
+```{r}
+0.024 < 0.05
+```
+
+> Queda en evidencia que el contenido promedio de gluten es significativamente diferente entre los dos sistemas de secado. En otras palabras, el sistema de secado sí parece tener un impacto en el contenido promedio de gluten en el trigo con lo cual se rechaza la hipotesis nula
+
 d.    Construir un intervalo de confianza 0,95 para la diferencia entre los promedios de contenido de gluten de trigo procesado con baja y con alta temperatura.
+
+```{r}
+resultado_t_test$conf.int
+```
+
+> Con un 95% de confianza, se puede decir que la diferencia en los promedios de contenido de gluten entre el trigo procesado a baja temperatura y el procesado a alta temperatura está entre 0.1957 y 2.5477 gramos por cada 100 gramos de trigo.
+
 e.    Explicar qué conclusión debería extraerse en relación con este fenómeno de interés y enunciar los supuestos bajo el cual dicha conclusión sería válida.
+
+> Se puede concluir que el sistema de secado del grano afecta significativamente el contenido promedio de gluten en el trigo. Específicamente, el trigo procesado con el sistema de secado a baja temperatura tiene, en promedio, un mayor contenido de gluten en comparación con el trigo procesado con el sistema de secado a alta temperatura.
+Esto es valido siempre y cuando se cumpla lo siguiente: 
+
+> Distribución Normal de los datos: Se asume que el contenido de gluten de ambas muestras (trigo secado a baja y alta temperatura) sigue una distribución normal. Este supuesto es crucial porque el test t utilizado para comparar las medias se basa en esta distribución. Si los datos no fueran normales, los resultados podrían no ser confiables.
+
+> Igualdad de varianzas: Se supone que las varianzas de las dos poblaciones son iguales. Esta condición es importante porque el test t utilizado es un test t para varianzas iguales. Si las varianzas fueran diferentes, el tipo de test aplicado podría no ser el adecuado, y esto afectaría la validez de la conclusión.
+
+> Independencia de las observaciones: Las muestras de cada grupo deben ser independientes. Esto significa que la medición del contenido de gluten en un trigo no debe influir en las demás mediciones. La independencia de las muestras es fundamental para que el test estadístico sea válido.
+Muestreo aleatorio: Las plantas de acopio de las que se obtuvieron las muestras fueron seleccionadas de manera aleatoria dentro de la provincia de Buenos Aires. La aleatoriedad en la selección asegura que los resultados obtenidos son representativos de la población general y no están sesgados.
+
+### Graficos:
+
+```{r}
+datos <- data.frame(
+  gluten = c(baja_temp, alta_temp),
+  sistema = factor(rep(c("Baja Temp", "Alta Temp"), c(length(baja_temp), length(alta_temp))))
+)
+```
+
+#### Boxplot
+
+```{r}
+ggplot(datos, aes(x = sistema, y = gluten, fill = sistema)) +
+  geom_boxplot() +
+  labs(title = "Contenido de gluten por sistema de secado",
+       x = "Sistema de secado",
+       y = "Contenido de gluten (g/100g)") +
+  theme_minimal()
+```
+
+#### Histograma
+
+```{r}
+ggplot(datos, aes(x = gluten, fill = sistema)) +
+  geom_histogram(position = "identity", alpha = 0.5, bins = 10) +
+  # facet_wrap(~sistema) +
+  labs(title = "Distribución del contenido de gluten",
+       x = "Contenido de gluten (g/100g)",
+       y = "Frecuencia") +
+  theme_minimal()
+```
 
 
