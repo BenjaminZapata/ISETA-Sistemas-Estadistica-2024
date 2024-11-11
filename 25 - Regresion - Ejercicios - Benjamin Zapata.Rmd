@@ -1,0 +1,232 @@
+---
+title: "25 - Regresión - Ejercicios"
+output: html_notebook
+---
+
+# Regresión
+
+```{r}
+library(datasets)
+library(ggplot2)
+```
+
+
+En todos los casos grafique los datos para visualizarlos de la mejor manera que se le ocurra.
+
+## 1. Regresión múltiple con mtcars
+
+Objetivo: Determinar los factores que afectan el consumo de combustible de los automóviles.
+
+Utiliza el dataset mtcars. La variable respuesta será mpg (millas por galón). Usa los siguientes predictores:
+-     wt (peso del auto)
+-     hp (caballos de fuerza)
+-     cyl (número de cilindros)
+-     gear (número de marchas)
+-   Evalúa los supuestos del modelo:
+-   Analiza los residuos para verificar homocedasticidad y normalidad.
+-   Interpreta los coeficientes estimados. ¿Qué variables tienen un impacto significativo en el consumo?
+
+```{r}
+data(mtcars)
+
+# Ver las primeras filas del dataset 
+head(mtcars)
+
+# Peso vs. Consumo
+ggplot(mtcars, aes(x = wt, y = mpg)) + geom_point() + geom_smooth(method = "lm") + 
+  ggtitle("Consumo vs Peso") + xlab("Peso del auto (wt)") + ylab("Consumo (mpg)")
+
+# Caballos de fuerza vs. Consumo
+ggplot(mtcars, aes(x = hp, y = mpg)) + geom_point() + geom_smooth(method = "lm") + 
+  ggtitle("Consumo vs Caballos de Fuerza") + xlab("Caballos de fuerza (hp)") + ylab("Consumo (mpg)")
+
+# Número de cilindros vs. Consumo
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) + geom_boxplot() +
+  ggtitle("Consumo vs Número de cilindros") + xlab("Número de cilindros (cyl)") + ylab("Consumo (mpg)")
+
+# Número de marchas vs. Consumo
+ggplot(mtcars, aes(x = factor(gear), y = mpg)) + geom_boxplot() +
+  ggtitle("Consumo vs Número de marchas") + xlab("Número de marchas (gear)") + ylab("Consumo (mpg)")
+
+```
+
+```{r}
+# Ajustar el modelo de regresión múltiple
+modelo <- lm(mpg ~ wt + hp + cyl + gear, data = mtcars)
+
+# resultados
+summary(modelo)
+
+```
+
+> Peso del auto (wt) es el único predictor estadísticamente significativo al nivel del 5%.
+> Caballos de fuerza (hp), número de cilindros (cyl), y número de marchas (gear) no son estadísticamente significativos individualmente.
+> Este resultado sugiere que, en este modelo, el consumo de combustible está principalmente influenciado por el peso del auto, mientras que los caballos de fuerza, el número de cilindros y el número de marchas no tienen un efecto estadísticamente significativo en el consumo.
+
+```{r}
+# Normalidad de los residuos
+shapiro.test(residuals(modelo))
+
+# Histograma de los residuos
+ggplot(data = NULL, aes(x = residuals(modelo))) + 
+  geom_histogram(bins = 10, color = "black", fill = "skyblue") +
+  ggtitle("Histograma de los residuos")
+
+# Gráfico de residuos vs. valores ajustados para verificar homocedasticidad
+plot(modelo$fitted.values, residuals(modelo), 
+     xlab = "Valores ajustados", ylab = "Residuos",
+     main = "Residuos vs. Valores Ajustados")
+abline(h = 0, col = "red")
+
+```
+
+## 2. Ejercicio: Predicción de precios con diamonds
+
+Objetivo: Predecir el precio de los diamantes en función de sus características.
+
+Trabaja con el dataset diamonds del paquete ggplot2. 
+-   ¿Cuál será la variable respuesta para cumplir con el objetivo?
+-   Elija los predictores adecuados.
+-   Evalúa la bondad de ajuste mediante el R² ajustado.
+-   Compara dos modelos: uno con todos los predictores y otro más simple (elimina una o más variables).
+
+```{r}
+diamonds
+
+# Modelo 1: Modelo completo con todos los predictores
+modelo_completo <- lm(price ~ carat + cut + color + clarity + depth + table + x + y + z, data = diamonds)
+summary(modelo_completo)
+```
+
+```{r}
+# R² ajustado para el modelo completo
+R2_ajustado_completo <- summary(modelo_completo)$adj.r.squared
+print(paste("R² ajustado del modelo completo:", R2_ajustado_completo))
+```
+
+```{r}
+# Modelo 2: Modelo reducido (eliminamos depth, table, x, y, z)
+modelo_reducido <- lm(price ~ carat + cut + color + clarity, data = diamonds)
+summary(modelo_reducido)
+```
+
+```{r}
+# R² ajustado para el modelo reducido
+R2_ajustado_reducido <- summary(modelo_reducido)$adj.r.squared
+print(paste("R² ajustado del modelo reducido:", R2_ajustado_reducido))
+```
+
+```{r}
+# Comparación de R² ajustado
+cat("Diferencia en R² ajustado entre el modelo completo y reducido:", R2_ajustado_completo - R2_ajustado_reducido)
+
+```
+
+> En este caso, el modelo reducido es una buena opción para predecir el precio de los diamantes. Las variables eliminadas en el modelo reducido (como depth, table, x, y, y z) no aportan significativamente al poder explicativo del modelo en comparación con el conjunto reducido de predictores (carat, cut, color, clarity).
+
+## 3. Ejercicio: Regresión múltiple con interacciones usando iris
+
+Objetivo: Estimar la longitud del pétalo en función de otras características y explorar interacciones.
+
+-   Utiliza el dataset iris. Elije una variable respuesta a explicar con las otras.
+-   ¿Cuáles son los posibles predictores?
+-   Introduce términos de interacción entre Species y las otras variables para evaluar si las relaciones difieren según la especie.
+-   Verifica si los coeficientes de las interacciones son significativos.
+
+> La variable respuesta en este caso es Petal.Length.
+> Los posibles predictores son Sepal.Length, Sepal.Width, Petal.Width, y Species.
+> Species es una variable categórica, por lo que la uso para evaluar interacciones.
+
+```{r}
+iris
+
+modelo_iris <- lm(Petal.Length ~ Sepal.Length * Species + Sepal.Width * Species + Petal.Width * Species, data = iris)
+
+#verificar significancia de las interacciones
+summary(modelo_iris)
+
+```
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, aes(linetype = Species)) +
+  labs(title = "Interacción entre Sepal.Length y Species en la predicción de Petal.Length")
+
+# Gráfica para explorar la interacción entre Petal.Length y Petal.Width según la especie
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length, color = Species)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, aes(linetype = Species)) +
+  labs(title = "Interacción entre Petal.Width y Species en la predicción de Petal.Length")
+```
+
+> Este análisis de interacciones nos muestra que la relación entre las características de las flores depende de la especie
+> Las interacciones significativas (Sepal.Length:Speciesvirginica y Speciesversicolor:Petal.Width) indican que el efecto de Sepal.Length y Petal.Width sobre Petal.Length depende de la especie.
+> Específicamente, para virginica, el aumento en Sepal.Length tiene un efecto positivo y significativo sobre Petal.Length.
+> Para versicolor, Petal.Width también tiene un efecto significativo y positivo en la longitud del pétalo, mientras que en las demás especies no se observa este efecto.
+
+## 4. Modelado de datos ecológicos con airquality
+
+Objetivo: Evaluar cómo diferentes factores ambientales afectan los niveles de ozono.
+
+-   ¿Cuál será la variable respuesta para cumplir con el objetivo?
+-   ¿Cuáles son los posibles predictores?
+-   Verifica si hay datos faltantes y decide cómo tratarlos (e.g., eliminación de casos o imputación).
+-   Ajusta un modelo de regresión y analiza qué factores afectan significativamente la concentración de ozono.
+-   Interpreta los resultados y sugiere acciones que podrían ayudar a reducir los niveles de ozono.
+
+> La variable respuesta es Ozone, que mide la concentración de ozono.
+> Los posibles predictores incluyen: Solar.R (radiación solar), Wind (velocidad del viento), Temp (temperatura), y Month (mes).
+
+```{r}
+airquality
+summary(airquality)
+```
+
+```{r}
+# Verificar la cantidad de datos faltantes en cada columna
+colSums(is.na(airquality))
+```
+
+```{r}
+# Elimmino filas con datos faltantes para simplificar el análisis
+airquality <- na.omit(airquality)
+
+
+modelo <- lm(Ozone ~ Solar.R + Wind + Temp + Month + Day, data = airquality)
+
+# Resumen del modelo 
+summary(modelo)
+```
+
+```{r}
+# 5. Análisis de los residuos para evaluar los supuestos del modelo
+par(mfrow = c(2, 2))  # ver 4 gráficos juntos
+plot(modelo)
+```
+
+```{r}
+# Interpretación de los resultados.  R² ajustado
+cat("R² ajustado:", summary(modelo)$adj.r.squared, "\n")
+```
+
+```{r}
+# Comparación de dos modelos
+# Modelo reducido sin la variable Day
+modelo_reducido <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = airquality)
+
+summary(modelo_reducido)
+```
+
+> La radiación solar y la temperatura aumentan el nivel de ozono.
+> La velocidad del viento tiene un efecto negativo sobre el ozono.
+> El mes tiene una tendencia a reducir los niveles de ozono, aunque esta relación no es concluyente.
+
+```{r}
+
+# Diferencia en R² ajustado entre el modelo completo y reducido
+cat("Diferencia en R² ajustado entre el modelo completo y el reducido:",
+    summary(modelo)$adj.r.squared - summary(modelo_reducido)$adj.r.squared, "\n")
+```
+
+> En este caso, la diferencia es 0.001564283, lo cual significa que la variable que eliminamos (Day) tiene un impacto mínimo en el poder predictivo del modelo.
