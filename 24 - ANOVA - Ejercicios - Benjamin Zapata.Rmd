@@ -1,0 +1,247 @@
+---
+title: "24 - ANOVA - Ejercicios"
+output: html_notebook
+---
+
+# ANOVA
+
+## 1. Ejercicio: Rotura de lana
+
+Se realizó un experimento para evaluar el efecto de dos factores sobre la cantidad de rupturas en un tejido: el tipo de lana (wool) y la tensión aplicada (tension). Los datos están en el dataset warpbreaks.
+
+-   Use la ayuda para comprender mejor los datos.
+-   Grafique los datos.
+-   Verifique los supuestos.
+-   Plantee las hipótesis nula y alternativa para cada factor y la interacción.
+-   Realice un ANOVA de dos factores con interacción para analizar el número de rupturas (breaks).
+-   ¿Qué factor tiene mayor efecto sobre las rupturas? ¿Existe interacción significativa entre ambos factores?
+-   En caso de encontrar significancia, realiza un análisis post-hoc adecuado y grafica los resultados.
+
+```{r}
+library(ggplot2)
+library(emmeans)
+warpbreaks
+
+##
+ggplot(warpbreaks, aes(x = factor(tension), y = breaks, color = wool)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.1) +
+  ylim(c(0, 80)) +
+  ggtitle("Warpbreaks")
+
+##
+anovaModel <- aov(breaks ~ wool * tension, data = warpbreaks)
+summary(anovaModel)
+
+## 
+emmeans(anovaModel, ~ wool * tension)
+
+## Normalidad - p-value de 0.8162, significa que presenta normalidad
+shapiro.test(residuals(anovaModel))
+
+## Homogeneidad de varianza - p-value = 0.0236, esto significa no hay homogeneidad de varianza. No podemos interpretar los datos
+bartlett.test(breaks ~ interaction(wool, tension), data = warpbreaks)
+```
+
+## 2. Ejercicio: Absorción de CO2
+
+Un estudio botánico analizó la absorción de CO2 por plantas de dos tipos (Type) bajo dos tratamientos (Treatment). 
+Los datos están en el dataset CO2
+
+-   Use la ayuda para comprender mejor los datos.
+
+> Plant (factor) representa identificadores unicos de plantas (3 por tipo)
+  Type representa el origen de la planta (Quebec o Mississippi)
+  Treatment (factor) toma dos valores; nonchilled (sin frio) o chilled (frio), representa el tratamiento que ha recibido la planta
+  Conc representa la concrentación de dioxido de carbono ambiental
+  Uptake representa la ingesta de dioxido de carbono de la planta (tasa de absorcion)
+
+-   Grafique los datos.
+
+```{r}
+CO2
+
+# El siguiente gráfico muestra la relación entre la concentración de CO2 y la tasa de absorción, separados por el tipo de planta y el tratamiento
+ggplot(CO2, aes(x = conc, y = uptake)) +
+  geom_point(aes(color = Type), size = 2) + # Creamos un gráfico de puntos, pintándolos de diferente color según el tipo
+  labs(title = "Absorción de CO2 por tipo de planta y tratamiento",
+       x = "Concentración de CO2 (ppm)",
+       y = "Tasa de absorción (mg c / m² / h)") +
+  facet_grid(Type ~ Treatment) # Separa el gráfico por tipo de planta y tratamiento recibido
+```  
+
+-   Verifique los supuestos.
+
+> Teniendo en cuenta el grafico anterior, podemos notar (principalmente en las plantas Mississippi, en Quebec no es tan notable la diferencia) que las plantas que recibieron el tratamiento frio durante la noche antes de conducir el experimento tienden a reducir su tasa de absorcion de carbono.
+
+-   Formule las hipótesis nulas y alternativas para ambos factores y la interacción.
+
+> Hipotesis para el tipo (Type):
+> Hipótesis nula: No hay diferencia en la absorción de CO2 entre los tipos de planta.
+> Hipótesis alternativa: Hay una diferencia en la absorción de CO2 entre los tipos de planta.
+
+> Hipotesis para el tratamiento (Treatment):
+> Hipótesis nula: No hay diferencia en la absorción de CO2 entre tratamientos.
+> Hipótesis alternativa: Hay una diferencia en la absorción de CO2 entre tratamientos.
+
+> Hipotesis interacción tipo-tratamiento (Type-Treatment):
+> Hipótesis nula: No hay interacción entre tipo de planta y tratamiento en la absorción de CO2.
+> Hipótesis alternativa: Hay interacción entre tipo de planta y tratamiento en la absorción de CO2.
+
+-   Realice un ANOVA de dos factores con interacción entre Type y Treatment para explicar la absorción de CO2 (uptake).
+
+```{r}
+ANOVA <- aov(uptake ~ Type * Treatment, data = CO2)
+summary(ANOVA)
+```
+
+-   ¿Existe una interacción significativa entre el tipo de planta y el tratamiento aplicado?
+
+> Si. Tanto el tratamiento aplicado como el tipo de las plantas infieren en la absorcion de CO2. Con el tratamiento frio ambas especies disminuyen la absorcion de CO2, siendo la de tipo Mississippi la mas afectada. En cuanto al tipo, la variante Quebec presenta mayor absorción que la anteriormente nombrada.
+
+> Sin embargo, la interacción entre el tipo de planta y el tratamiento que recibe no tienen un efecto significativo en la absorción de CO2.
+
+-   Interpreta los resultados y discute cómo se relacionan los efectos principales con la interacción.
+
+```{r}
+shapiro.test(CO2$uptake) # Prueba de normalidad de residuos - P-value: 0.00079
+
+bartlett.test(uptake ~ interaction(Type, Treatment), data = CO2) # Prueba de homogeneidad de varianzas - P-value: 0.00159
+```
+
+## 3. Ejercicio: Efectividad de insecticidas
+
+Se probaron seis tipos de insecticidas (spray) para evaluar su efectividad en la eliminación de insectos. 
+Los datos están en el dataset InsectSprays
+
+-   Use la ayuda para comprender mejor los datos.
+
+```{r}
+InsectSprays
+
+help(InsectSprays)
+summary(InsectSprays)
+```
+
+-   Grafique los datos.
+
+```{r}
+ggplot(InsectSprays, aes(x = spray, y = count, fill = spray)) +
+  geom_boxplot() +
+  labs(title = "Cantidad de insectos por tipo de insecticida", x = "Tipo de Spray", y = "Cantidad de Insectos") +
+  theme_minimal()
+```
+
+-   Verifique los supuestos.
+
+```{r}
+shapiro.test(InsectSprays$count) # Prueba de normalidad
+
+bartlett.test(count ~ spray, data = InsectSprays) # Prueba de homogeneidad de varianzas
+```
+
+-   Plantee las hipótesis nula y alternativa para este ANOVA.
+
+> Hipótesis nula: No hay diferencias en la efectividad de los distintos tipos de insecticidas
+> Hipótesis alternativa: Al menos un tipo de insecticida tiene una efectividad diferente
+
+-   Realice un ANOVA de un factor para evaluar el efecto del tipo de spray sobre el conteo de insectos (count).
+
+```{r}
+ANOVAInsectos <- aov(count ~ spray, data = InsectSprays)
+summary(ANOVAInsectos)
+```
+
+-   En caso de encontrar diferencias significativas, realiza un test de Tukey para identificar qué tipos de sprays difieren significativamente entre sí.
+
+```{r}
+tukey <- TukeyHSD(ANOVAInsectos, "spray") # Test de Tukey
+print(tukey)
+```
+
+-   Grafica los resultados del análisis post-hoc.
+
+```{r}
+plot(tukey, las = 1)
+title("Comparación post-hoc de Tukey para Insect Sprays")
+```
+
+## 4. Ejercicio: Dieta sobre crecimiento de pollos
+
+> Aclaración, este ejercicio tiene una característica que requiere de un análisis algo diferente, ya que a cada pollo se le midió el peso varias veces a lo largo del tiempo. Sin embargo realizaremos aquí un ANOVA común, luego les mostraré la alternativa.
+
+Una investigación desea evaluar si existe una interacción significativa entre el tipo de dieta y el tiempo de medición sobre el peso de los pollos. 
+Los datos están en el dataset ChickWeight
+
+-   Use la ayuda para comprender mejor los datos.
+
+```{r}
+ChickWeight
+```
+
+-   Grafique los datos.
+
+```{r}
+# Gráfico de peso de pollos según tiempo y dieta
+ggplot(ChickWeight, aes(x = Time, y = weight, color = as.factor(Diet))) +
+  geom_line(aes(group = Chick), alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Peso de pollos a través del tiempo por tipo de dieta",
+       x = "Tiempo (días)",
+       y = "Peso",
+       color = "Dieta") +
+  theme_minimal()
+```
+
+-   Verifique los supuestos.
+
+```{r}
+shapiro.test(residuals(modelo4))# Normalidad de los residuos
+
+bartlett.test(weight ~ interaction(Diet, Time), data = ChickWeight) # Homogeneidad de varianzas
+```
+-   Plantee las hipótesis nula y alternativa para ambos factores y su interacción.
+
+> Hipótesis para el efecto de la dieta (Diet):
+> Hipótesis nula: No hay diferencia en el peso de los pollos entre las distintas dietas.
+> Hipótesis alternativa: Hay una diferencia en el peso de los pollos entre las distintas dietas.
+
+> Hipótesis para el efecto del tiempo (Time):
+> Hipótesis nula: No hay diferencia en el peso de los pollos entre los tiempos de medición.
+> Hipótesis alternativa: Hay una diferencia en el peso de los pollos entre los tiempos de medición.
+
+> Hipótesis para la interacción entre dieta y tiempo (Diet):
+> Hipótesis nula: No hay interacción entre la dieta y el tiempo sobre el peso de los pollos.
+> Hipótesis alternativa: Existe una interacción significativa entre la dieta y el tiempo sobre el peso de los pollos.
+ 
+
+-   Realice un ANOVA de dos factores con interacción (Diet y Time) para explicar el peso (weight).
+
+```{r}
+ANOVAPollo <- aov(weight ~ Diet * Time, data = ChickWeight)
+summary(ANOVAPollo)
+```
+
+-   Interprete los resultados del análisis. 
+
+> En base a los resultados del ANOVA podemos llegar a rechazar las hipotesis nulas para ambos factores individuales (Diet y Time) asi como la hipotesis nula de la interacción entre ellas. Los tres efectos son significativos para el peso de los pollos. 
+
+> El p-value del test de Shapiro es inferior a 0.05, lo que significa que los residuos no se distribuyen normalmente.
+
+> El p-value del test de bartlett (homogeneidad) es demasiado pequeño, lo que indica que las varianzas no son homogéneas entre los grupos. La falta de homogeneidad de varianzas sugiere que los supuestos del ANOVA no se cumplen del todo, lo cual podría afectar los resultados del análisis
+
+-   Si existen diferencias significativas, realiza un análisis post-hoc para determinar qué combinaciones de niveles presentan diferencias.
+
+```{r}
+emmeansChicken <- emmeans(modelo4, ~ Diet * Time) # Medias marginales estimadas para la interacción Diet:Time
+
+TukeyChicken <- contrast(emmeansChicken, method = "tukey") # Análisis post-hoc de Tukey para comparar todas las combinaciones de Diet y Time
+print(TukeyChicken)
+```
+
+```{r}
+plot(TukeyChicken, las = 1)
+title("Comparación post-hoc de Tukey para Chick Weight")
+```
+
+>  El análisis muestra diferencias significativas en la mayoría de las combinaciones, excepto en la última comparación (Diet3 vs. Diet4 en el mismo tiempo).
